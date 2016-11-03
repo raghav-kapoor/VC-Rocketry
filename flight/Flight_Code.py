@@ -18,23 +18,16 @@ def getPressure():
     return round(weather.pressure(),2)
 
 def getAcceleration():
-    return "\nx: " + str(motion.accelerometer().x)
-    + "\ny: " + str(motion.accelerometer().y)
-    + "\nz: " + str(motion.accelerometer().z)
+    return "\nx: " + str(motion.accelerometer().x) + "\ny: " + str(motion.accelerometer().y) + "\nz: " + str(motion.accelerometer().z)
 
 def getCurrent1():
-    return "\nShunt: " + str(ina219A.getShuntVoltage_mV()) + " mV"
-    + "\nBus: " + str(ina219A.getBusVoltage_V()) + " V"
-    + "\nCurrent: " + str(ina219A.getCurrent_mA()) + " mA"
+    return "\nShunt: " + str(ina219A.getShuntVoltage_mV()) + " mV" + "\nBus: " + str(ina219A.getBusVoltage_V()) + " V" + "\nCurrent: " + str(ina219A.getCurrent_mA()) + " mA"
 
 def getCurrent2():
-    return "\nShunt: " + str(ina219B.getShuntVoltage_mV()) + " mV"
-    + "\nBus: " + str(ina219B.getBusVoltage_V()) + " V"
-    + "\nCurrent: " + str(ina219B.getCurrent_mA()) + " mA"
+    return "\nShunt: " + str(ina219B.getShuntVoltage_mV()) + " mV" + "\nBus: " + str(ina219B.getBusVoltage_V()) + " V" + "\nCurrent: " + str(ina219B.getCurrent_mA()) + " mA"
 
 def getGPS():
-    return "\nLatitude: " + str(gpsd.fix.latitude)
-    + "\nLongitude: " + str(gpsd.fix.longitude)
+    return "\nLatitude: " + str(gpsd.fix.latitude) + "\nLongitude: " + str(gpsd.fix.longitude)
 
 def getAltitude():
     "\nAltitude: " + str(gpsd.fix.altitude)
@@ -84,24 +77,14 @@ write("--- Enviro pHAT Monitoring ---")
 
 try:
     while True:
-        #Remove output for flight code
-        output = """
-"Temp: " + str(getTemp()) + "c\n"
-"Pressure: " + str(getPressure())+"hPa\n"
-"Acceleration: " + str(getAcceleration())
-"Current Sensor 0x45: " + str(getCurrent1())
-"Current Sensor 0x41: " + str(getCurrent2())
-"GPS: " + str(getGPS())
-"Altitude: " + str(getAltitude())
-"Speed: " + str(getSpeed())
-
-
-""".format(
-    )
-        output = output.replace("\n","\n\033[K")
-        write(output)
-        lines = len(output.split("\n"))
-        write("\033[{}A".format(lines - 1))
+	print ("Temp: " + str(getTemp()) + "c\n")
+	print ("Pressure: " + str(getPressure())+"hPa\n")
+	print ("Acceleration: " + str(getAcceleration()))
+	print ("Current Sensor 0x45: " + str(getCurrent1()))
+	print ("Current Sensor 0x41: " + str(getCurrent2()))
+	print ("GPS: " + str(getGPS()))
+	print ("Altitude: " + str(getAltitude()))
+	print ("Speed: " + str(getSpeed()))
 
         time.sleep(1)
 
