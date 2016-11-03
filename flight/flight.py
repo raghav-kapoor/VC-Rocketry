@@ -30,7 +30,7 @@ y = Axis(motion.accelerometer().y, time.time())
 z = Axis(motion.accelerometer().z, time.time())
 
 #Function for updating velocity and position from accelerometer
-def velocityPositionFromAcceleration(Axis ax, float newA):
+def velocityPositionFromAcceleration(ax, newA):
 	tInt = time.time() - ax.tA
 	ax.tA += tInt
 	newV = (newA + ax.aA) * tInt / 2
@@ -41,4 +41,4 @@ def velocityPositionFromAcceleration(Axis ax, float newA):
 #Testing code
 while True:
 	velocityPositionFromAcceleration(x,motion.accelerometer().x)
-	print str(x.aA) + str(vA) + str(pA)
+	print str(x.aA) + str(x.vA) + str(x.pA)
