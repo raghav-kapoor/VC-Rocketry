@@ -1,5 +1,6 @@
 import time
 from envirophat import motion
+
 #Defining constant variables
 #
 #
@@ -37,3 +38,7 @@ def velocityPositionFromAcceleration(Axis ax, float newA):
 	ax.vA = newV
 	ax.aA = newA
 
+#Testing code
+while True:
+	velocityPositionFromAcceleration(x,motion.accelerometer().x)
+	print str(x.aA) + str(vA) + str(pA)
