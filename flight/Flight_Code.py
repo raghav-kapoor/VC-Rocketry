@@ -27,13 +27,7 @@ def getCurrent2():
     return "\nShunt: " + str(ina219B.getShuntVoltage_mV()) + " mV" + "\nBus: " + str(ina219B.getBusVoltage_V()) + " V" + "\nCurrent: " + str(ina219B.getCurrent_mA()) + " mA"
 
 def getGPS():
-    return "\nLatitude: " + str(gpsd.fix.latitude) + "\nLongitude: " + str(gpsd.fix.longitude)
-
-def getAltitude():
-    "\nAltitude: " + str(gpsd.fix.altitude)
-
-def getSpeed():
-    "\nSpeed: " + str(gpsd.fix.speed)
+    return "\nLatitude: " + str(gpsd.fix.latitude) + "\nLongitude: " + str(gpsd.fix.longitude) + "\nAltitude: " + str(gpsd.fix.altitude) + "\nSpeed: " + str(gpsd.fix.speed)
 
 ina219A = INA219(0x45)
 ina219B = INA219(0x41)
@@ -83,8 +77,6 @@ try:
 	print ("Current Sensor 0x45: " + str(getCurrent1()))
 	print ("Current Sensor 0x41: " + str(getCurrent2()))
 	print ("GPS: " + str(getGPS()))
-	print ("Altitude: " + str(getAltitude()))
-	print ("Speed: " + str(getSpeed()))
 
         time.sleep(1)
 
