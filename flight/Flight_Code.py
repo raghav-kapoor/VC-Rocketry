@@ -27,7 +27,7 @@ def getCurrent2():
     return "\nShunt: " + str(ina219B.getShuntVoltage_mV()) + " mV" + "\nBus: " + str(ina219B.getBusVoltage_V()) + " V" + "\nCurrent: " + str(ina219B.getCurrent_mA()) + " mA"
 
 def getGPS():
-    return "\nLatitude: " + str(gpsd.fix.latitude) + "\nLongitude: " + str(gpsd.fix.longitude) + "\nAltitude: " + str(gpsd.fix.altitude) + "\nSpeed: " + str(gpsd.fix.speed)
+    return "\nLatitude: " + str(gpsd.fix.latitude) + "\nLongitude: " + str(gpsd.fix.longitude) + "\nAltitude: " + str(gpsd.fix.altitude) + "\nSpeed: " + str(gpsd.fix.speed)+ "\nTime: " + str(gpsd.fix.time)
 
 ina219A = INA219(0x45)
 ina219B = INA219(0x41)
