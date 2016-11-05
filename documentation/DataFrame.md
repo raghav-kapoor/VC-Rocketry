@@ -19,9 +19,9 @@ Data Point entries:
 - **G-current 2:** in mA
 - **H-gps lat:** in degrees
 - **I-gps long:** in degrees
-- **J-gps alt:** in degrees
+- **J-gps alt:** in meters
 - **K-gps speed:** in m/s
-- **L-gps time:** 
+- **L-gps time:** in milliseconds
 - **M-accelerometer x:** in g
 - **N-accelerometer y:** in g
 - **O-accelerometer z:** in g
@@ -33,4 +33,4 @@ Data Point entries:
 
 Example:
 --------
-<1478128752648,0,0,20.8431,100909.83,366,-1,37.275995,-121.82688,J,K,L,1.1864,-1.4392,1.999,1395,-2182,-3231,>
+<1478128752648,0,0,20.8431,100909.83,366,-1,37.275995,-121.82688,143.3,1478309345067,0.458,1.1864,-1.4392,1.999,1395,-2182,-3231,>
