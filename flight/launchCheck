@@ -1,0 +1,5 @@
+def launchCheck():
+    if (frames[-1][accelerationz] > 2.0):
+        return 1
+    else:
+        return 0
