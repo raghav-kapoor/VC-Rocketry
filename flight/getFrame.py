@@ -46,6 +46,36 @@ def getFrame():
 
     frame.append((var()[linux_time] = raw_data))
 
+# GPS variables
+gpsd = None
+
+# GPS init
+call(["sudo", "systemctl", "stop", "gpsd.socket"])
+call(["sudo", "systemctl", "disable", "gpsd.socket"])
+call(["sudo", "gpsd", "/dev/ttyS0", "-F", "/var/run/gpsd.sock"])
+
+class GpsPoller(threading.Thread):
+        def __init__(self):
+                threading.Thread.__init__(self)
+                global gpsd #bring it in scope
+                gpsd = gps(mode = WATCH_ENABLE) #starting the stream of info
+                self.current_value = None
+                self.running = True #setting the thread running to true
+        def run(self):
+                global gpsd
+                while gpsp.running:
+                        gpsd.next()
+
+if __name__ == '__main__':
+    gpsp = GpsPoller()
+    gpsp.start()
+    # Waits for GPS to get a Fix
+    time.sleep(30)
+
+def write(line):
+    sys.stdout.write(line)
+    sys.stdout.flush()
+
 start_time = time.time()    
 while (num < 1000):
     getFrame()
