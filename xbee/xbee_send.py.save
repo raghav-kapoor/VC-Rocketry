@@ -1,0 +1,10 @@
+import serial
+from time import sleep
+ser = serial.Serial('/dev/ttyUSB0', 9600)
+string = ""
+character = ''
+for i in range(10000000):
+  string = str(i) 
+  character = char(i)
+  if (i%1 == 0):
+    ser.write(character)
