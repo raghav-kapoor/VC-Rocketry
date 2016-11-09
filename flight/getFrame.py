@@ -76,17 +76,14 @@ if __name__ == '__main__':
     num = 0
     while True:
         getFrame()
-    	print frame[num]
-        ser.write(frame[num])
+	print (("time ") + (str)(frame[num]["linux_time"]))
+    	print (("x ") + (str)(frame[num]["a_x"]))
+	print (("y ") + (str)(frame[num]["a_y"]))
+	print (("z ") + (str)(frame[num]["a_z"]))
+	print ("")
    	num = num + 1
     
     #total_time = str(time.time() - start_time)
    
     #print("Time to run: " + total_time)
-    time.sleep(5)
-    
-
-def write(line):
-    sys.stdout.write(line)
-    sys.stdout.flush()
-
+    #time.sleep(5)
