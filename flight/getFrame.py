@@ -29,7 +29,7 @@ magnetometer, gps, and etc. and adds it to the frames array
 """
 
 def getFrame():
-    raw_data = { "linux_time" : time.time(),
+    raw_data = { "linux_time" : (time.time()),
     "a_x": round(motion.accelerometer().x, roundOff), 
     "a_y": round(motion.accelerometer().y, roundOff),
     "a_z": round(motion.accelerometer().z, roundOff),    
@@ -72,7 +72,6 @@ if __name__ == '__main__':
     gpsp = GpsPoller()
     gpsp.start()
     # Waits for GPS to get a Fix
-    #start_time = time.time()
     num = 0
     while True:
         getFrame()
