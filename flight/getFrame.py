@@ -48,6 +48,8 @@ def getFrame():
 
     frame.append(raw_data)
 
+    return raw_data
+
 # GPS variables
 gpsd = None
 
