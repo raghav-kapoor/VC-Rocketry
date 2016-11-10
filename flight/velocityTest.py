@@ -20,12 +20,18 @@ def getFrame():
                  }
     frame.append(raw_data)
 
+i = 0
 
 while True:
-    time.sleep(.01)
     getFrame()
-    #print (frame[-1]["a_x"])
-    if (frame[-1]["a_x"] > 0.1):
+    print (frame[-1]["a_x"])
+    print (frame[-1]["a_y"])
+    if (abs(frame[-1]["a_x"])  > 0.1 and abs(frame[-1]["a_y"]) > 0.1):
     	getFrame()
-    	v_x = (((frame[-1]["a_x"])+(frame[0]["a_x"])) * .5) * (((frame[0]["linux_time"])) - ((frame[-1]["linux_time"])))
-    	print(v_x)
+    	v_x = (((frame[-1]["a_x"])+(frame[-2]["a_x"])) * .5) * (((frame[-1]["linux_time"])) - ((frame[-2]["linux_time"])))
+        v_y = (((frame[-1]["a_y"])+(frame[-2]["a_y"])) * .5) * (((frame[-1]["linux_time"])) - ((frame[-2]["linux_time"])))
+        print(v_x)
+        print(v_y)
+    print
+    i++
+    if i == 2 
