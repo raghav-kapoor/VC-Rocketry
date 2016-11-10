@@ -10,16 +10,18 @@ from subprocess import call
 import RPi.GPIO as GPIO
 import serial
 
-def getFrame();
-    raw_data = { "linux_time": (finishTime - time.time),
+frame = []
+roundOff = 4
+
+def getFrame():
+    raw_data = { "linux_time": (time.time()),
                  "a_x": round(motion.accelerometer().x, roundOff),
                  "a_y": round(motion.accelerometer().y, roundOff),
-
-                 frame.append(raw_data)
-               }
+                 }
+    frame.append(raw_data)
 
 getFrame()
 while True:
     getFrame()
-    v_x = (((frame[-1]["a_x"])+(frame[0]["a_x"])) * .5) * (((frame[0]["linux_time"]))- ((frame[-1]["linux_time"])))
+    v_x = (((frame[-1]["a_x"])+(frame[0]["a_x"])) * .5) * (((frame[0]["linux_time"])) - ((frame[-1]["linux_time"])))
     print(v_x)
