@@ -32,21 +32,21 @@ while True:
     getFrame()
     print (frame[-1]["a_x"])
     print (frame[-1]["a_y"])
-    if (abs(frame[-1]["a_x"])  > 0.1 and abs(frame[-1]["a_y"]) > 0.1):
-    	getFrame()
-        print(velocityX())
-        print(velocityY())
-	print
+    #if (abs(frame[-1]["a_x"])  > 0.1 and abs(frame[-1]["a_y"]) > 0.1):
+    getFrame()
+    print(velocityX())
+    print(velocityY())
+    print
+    getFrame()
+    i = i + 1
+    if i == 2:
         getFrame()
-    	i = i + 1
-    	if i == 2:
-            getFrame()
-            p_x = ((velocityX() + v_xi) * 0.5) * ((frame[-1]["linux_time"])) - ((frame[-2]["linux_time"]))
-            p_y = ((velocityY() + v_yi) * 0.5) * ((frame[-1]["linux_time"])) - ((frame[-2]["linux_time"]))
-            print(p_x)
-            print(p_y)
-	    print()
-	    i = 0
-        v_xi = velocityX()
-        v_yi = velocityY()
+        p_x = ((velocityX() + v_xi) * 0.5) * ((frame[-1]["linux_time"])) - ((frame[-4]["linux_time"]))
+        p_y = ((velocityY() + v_yi) * 0.5) * ((frame[-1]["linux_time"])) - ((frame[-4]["linux_time"]))
+        print(p_x)
+        print(p_y)
+        print()
+        i = 0
+    v_xi = velocityX()
+    v_yi = velocityY()
     
