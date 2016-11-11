@@ -36,14 +36,17 @@ while True:
     	getFrame()
         print(velocityX())
         print(velocityY())
+	print
         getFrame()
-    i++
-    if i == 2:
-        getFrame()
-        p_x = ((v_x + v_xi) * 0.5) * ((frame[-1]["linux_time"])) - ((frame[-2]["linux_time"]))
-        p_y = ((velocityY() + v_yi) * 0.5) * ((frame[-1]["linux_time"])) - ((frame[-2]["linux_time"]))
-        print(p_x)
-        print(p_y)
-    v_xi = velocityX()
-    v_yi = velocityY()
+    	i = i + 1
+    	if i == 2:
+            getFrame()
+            p_x = ((velocityX() + v_xi) * 0.5) * ((frame[-1]["linux_time"])) - ((frame[-2]["linux_time"]))
+            p_y = ((velocityY() + v_yi) * 0.5) * ((frame[-1]["linux_time"])) - ((frame[-2]["linux_time"]))
+            print(p_x)
+            print(p_y)
+	    print()
+	    i = 0
+        v_xi = velocityX()
+        v_yi = velocityY()
     
