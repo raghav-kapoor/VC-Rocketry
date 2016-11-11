@@ -21,12 +21,14 @@ def getFrame():
     frame.append(raw_data)
 
 def velocityX():
-    return (((frame[-1]["a_x"])+(frame[-2]["a_x"])) * .5) * (((frame[-1]["linux_time"])) - ((frame[-2]["linux_time"])))
+    return (((frame[-1]["a_x"])+(frame[-2]["a_x"])) * .5) * (((frame[-1]["linux_time"])) - ((frame[-2]["linux_time"])) + v_xi)
 
 def velocityY():
-    return (((frame[-1]["a_y"])+(frame[-2]["a_y"])) * .5) * (((frame[-1]["linux_time"])) - ((frame[-2]["linux_time"])))
+    return (((frame[-1]["a_y"])+(frame[-2]["a_y"])) * .5) * (((frame[-1]["linux_time"])) - ((frame[-2]["linux_time"])) + v_yi)
 
 i = 0
+v_xi = 0
+v_yi = 0
 
 while True:
     getFrame()
@@ -36,6 +38,8 @@ while True:
     getFrame()
     print(velocityX())
     print(velocityY())
+    v_xi = velocityX() 
+    v_yi = velocityY()
     print
     getFrame()
     i = i + 1
@@ -47,6 +51,5 @@ while True:
         print(p_y)
         print()
         i = 0
-    v_xi = velocityX()
-    v_yi = velocityY()
+    
     
