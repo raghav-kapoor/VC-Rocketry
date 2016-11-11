@@ -32,6 +32,12 @@ while True:
         v_y = (((frame[-1]["a_y"])+(frame[-2]["a_y"])) * .5) * (((frame[-1]["linux_time"])) - ((frame[-2]["linux_time"])))
         print(v_x)
         print(v_y)
-    print
     i++
-    if i == 2 
+    if i == 2:
+        p_x = ((v_x + v_xi) * 0.5) * ((frame[-1]["linux_time"])) - ((frame[-2]["linux_time"]))
+        p_x = ((v_x + v_xi) * 0.5) * ((frame[-1]["linux_time"])) - ((frame[-2]["linux_time"]))
+        print(p_x)
+        print(p_y)
+    v_xi = v_x
+    v_yi = vy
+    
