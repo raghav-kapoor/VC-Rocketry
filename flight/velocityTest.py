@@ -20,36 +20,36 @@ def getFrame():
                  }
     frame.append(raw_data)
 
-def velocityX():
-    return (((frame[-1]["a_x"])+(frame[-2]["a_x"]) * .5) * ((frame[-1]["linux_time"]) - (frame[-2]["linux_time"])) + v_xi)    
+def velocityX(i):
+    return (((((frame[i]["a_x"])+(frame[i-1]["a_x"])) * .5) * ((frame[i]["linux_time"]) - (frame[i-1]["linux_time"]))) + v_xi)    
+    
 
 def velocityY():
-    return (((frame[-1]["a_y"])+(frame[-2]["a_y"]) * .5) * ((frame[-1]["linux_time"]) - (frame[-2]["linux_time"])) + v_yi)
+    return (((((frame[-1]["a_y"])+(frame[-2]["a_y"])) * .5) * ((frame[-1]["linux_time"]) - (frame[-2]["linux_time"]))) + v_yi)
 
-i = 0
+i = 1
 v_xi = 0
 v_yi = 0
-
+getFrame()
 while True:
     getFrame()
-    print (frame[-1]["a_x"])
-    print (frame[-1]["a_y"])
+    vinstx=velocityX(i)
+    #print (frame[-1]["a_x"])
+    #print (frame[-1]["a_y"])
     #if (abs(frame[-1]["a_x"])  > 0.1 and abs(frame[-1]["a_y"]) > 0.1):
-    getFrame()
-    print(round(velocityX(), roundOff))
-    print(round(velocityY(), roundOff))
-    v_xi = velocityX() 
+    print(round(vinstx, roundOff))
+    print ("\n")
+    #print(round(velocityY(), roundOff))
+    v_xi = vinstx 
     v_yi = velocityY()
-    print
-    getFrame()
     i = i + 1
-    if i == 2:
-        getFrame()
-        p_x = (round(((velocityX() + v_xi) * 0.5) * ((frame[-1]["linux_time"]) - (frame[-4]["linux_time"]))), roundOff)
-        p_y = (round(((velocityY() + v_yi) * 0.5) * ((frame[-1]["linux_time"]) - (frame[-4]["linux_time"]))), roundOff)
-        print(p_x)
-        print(p_y)
-        print()
-        i = 0
+    #if i == 2:
+        #getFrame()
+        #p_x = (round(((velocityX() + v_xi) * 0.5) * ((frame[-1]["linux_time"]) - (frame[-4]["linux_time"]))), roundOff)
+        #p_y = (round(((velocityY() + v_yi) * 0.5) * ((frame[-1]["linux_time"]) - (frame[-4]["linux_time"]))), roundOff)
+        #print(p_x)
+        #print(p_y)
+        #print
+        #i = 0
     
     
