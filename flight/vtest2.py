@@ -33,10 +33,7 @@ vsum = 0
 while True:
     getFrame()
     vinit = velocityX()
-    if (vinit == 0):
-        vsum = 0
-    else:
-        vsum = vsum + vinit
+    vsum = vsum + vinit
     print (frame[-1]["a_x"])
     print vinit
     print vsum
