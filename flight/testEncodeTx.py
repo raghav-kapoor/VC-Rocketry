@@ -63,6 +63,7 @@ def frameAssembly(testFrame):
     cFrame += str(abs(int(testFrame["volt_b2"]*1000))).zfill(4)[-4:]
     cFrame += "0" + str(int(testFrame["gps_lat"]*1000000)).zfill(9)[-9:] if testFrame["gps_lat"] > 0 else "1" + str(abs(int(testFrame["gps_lat"]*1000000))).zfill(9)[-9:]
     cFrame += "0" + str(int(testFrame["gps_lon"]*1000000)).zfill(9)[-9:] if testFrame["gps_lon"] > 0 else "1" + str(abs(int(testFrame["gps_lon"]*1000000))).zfill(9)[-9:]
+    cFrame += str(abs(int(testFrame["gps_alt"]*10))).zfill(5)[-5:]
     cFrame += str(abs(int(testFrame["gps_spd"]*10))).zfill(4)[-4:]
     cFrame += "0" + str(int(testFrame["a_x"]*10)).zfill(3)[-3:] if testFrame["a_x"] > 0 else "1" + str(abs(int(testFrame["a_x"]*10))).zfill(3)[-3:]
     cFrame += "0" + str(int(testFrame["a_y"]*10)).zfill(3)[-3:] if testFrame["a_y"] > 0 else "1" + str(abs(int(testFrame["a_y"]*10))).zfill(3)[-3:]

@@ -10,30 +10,29 @@ Structure (of one frame):
 
 Data Point entries:
 -------------------
-- **A-linux time:**			 9 digits (First four digits on lauch day will always be 1479, thus not included.)
-- **B-flight mode:**	0-Ground mode unarmed; 1-Ground mode armed; 2-Flight mode ascend; 4-Recovery mode
+- **time-millisecond since epoch:**	13 digits
+- **flight_mode:**	0-Ground mode unarmed; 1-Ground mode armed; 2-Flight mode ascend; 3-Flight mode descend; 4-Recovery mode
 - **C-squib deployment:**	0-Not deployed; 1-Deployed
-- **D-temperature:** in celceus			
-- **E-pressure:** in 10 Pa
-- **F-current 1:** in mA
-- **G-voltage 1:** in V
-- **H-current 2:** in mA
-- **I-voltage 2:** in V
-- **J-gps lat:** in 0.000001 degrees, 10 digits (first digit positivity) PDDD(.)DDDDDD
-- **K-gps long:** in 0.000001 degrees, 10 digits (first digit positivity)
-- **L-gps alt:** in 0.1 meters, 4 digits
-- **M-gps speed:** in 0.1 m/s, 4 digits
-- **N-gps time:** in milliseconds 9 digits ignoring 1479
-- **O-accelerometer x:** in g
-- **P-accelerometer y:** in g
-- **Q-accelerometer z:** in g
-- **R-magnetometer x:** in 10 G
-- **S-magnetometer y:** in 10 G
-- **T-magnetometer z:** in 10 G
+- **temp-temperature:**	in celceus
+- **E-pressure:**	in 10 Pa
+- **F-current 1:**	in mA
+- **G-voltage 1:**	in V
+- **H-current 2:**	in mA
+- **I-voltage 2:**	in V
+- **J-gps lat:**	in 0.000001 degrees, 10 digits (first digit positivity) PDDD(.)DDDDDD
+- **K-gps long:**	in 0.000001 degrees, 10 digits (first digit positivity)
+- **L-gps alt:**	in meters, 4 digits
+- **M-gps speed:**	in 0.1 m/s, 4 digits
+- **N-accelerometer x:**	in g
+- **O-accelerometer y:**	in g
+- **P-accelerometer z:**	in g
+- **Q-magnetometer x:**	in 10 G
+- **R-magnetometer y:**	in 10 G
+- **S-magnetometer z:**	in 10 G
 
 Datapoint:
 ----------
-By point:	13	1	1	4	5	4	4	4	4	10	10	4	4	4	4	4	4	4	4			
+By point:	13	1	1	4	5	4	4	4	4	10	10	5	4	4	4	4	4	4	4			
 
 Example:
 --------
