@@ -23,6 +23,21 @@ def decToBin(x):
 def binToDec(x):
 	return(str(int(str(x),2)))
 
+class DataPoint:
+	#name in dictionary
+	name = ""
+	#head digit for positivity
+	hasHead = 0
+	#amount of digits including the head
+	length = 0
+	#digits decimal offset count
+	decOffset = 0
+
+	def __init__(self, name, hasHead, length, decOffset):
+		self.name = name
+		self.hasHead = hasHead
+		self.length = length
+		self.decOffset = decOffset
 
 testFrame = { 
 	"time": time.time(),
@@ -45,11 +60,41 @@ testFrame = {
 	"mag_y": -2182,
 	"mag_z": -3231 }
 
+FRAME_STRUCT = []
+FRAME_STRUCT.append(DataPoint("time", 0, 13, 0))
+FRAME_STRUCT.append(DataPoint("flight_mode", 0, 1, 0))
+FRAME_STRUCT.append(DataPoint("squib_deployed", 0, 1, 0))
+FRAME_STRUCT.append(DataPoint("temp", 0, 4, 1))
+FRAME_STRUCT.append(DataPoint("pressure", 0, 5, -1))
+FRAME_STRUCT.append(DataPoint("current_1", 0, 4, 1))
+FRAME_STRUCT.append(DataPoint("volt_b1", 0, 4, 3))
+FRAME_STRUCT.append(DataPoint("current_2", 0, 4, 1))
+FRAME_STRUCT.append(DataPoint("volt_b2", 0, 4, 3))
+FRAME_STRUCT.append(DataPoint("gps_lat", 1, 10, 6))
+FRAME_STRUCT.append(DataPoint("gps_lon", 1, 10, 6))
+FRAME_STRUCT.append(DataPoint("gps_alt", 0, 5, 1))
+FRAME_STRUCT.append(DataPoint("gps_spd", 0, 4, 1))
+FRAME_STRUCT.append(DataPoint("a_x", 1, 4, 1))
+FRAME_STRUCT.append(DataPoint("a_y", 1, 4, 1))
+FRAME_STRUCT.append(DataPoint("a_z", 1, 4, 1))
+FRAME_STRUCT.append(DataPoint("mag_x", 1, 4, -1))
+FRAME_STRUCT.append(DataPoint("mag_y", 1, 4, -1))
+FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, -1))
+
+size = 0
+for dataPoint in FRAME_STRUCT:
+	size +=  dataPoint.length
+
+def decode(raw):
+	if (len(raw) != size):
+		return "FrameWrongSize\n"
+
+
 cFrame = ""
 cFrame += str(int(testFrame["time"]*1000))
 cFrame += str(testFrame["flight_mode"])
 cFrame += str(testFrame["squib_deployed"])
-cFrame += str(abs(int(testFrame["temp"]*10))+1000).zfill(4)[-4:]
+cFrame += str(abs(int(testFrame["temp"]*10))).zfill(4)[-4:]
 cFrame += str(abs(int(testFrame["pressure"]/10))).zfill(5)[-5:]
 cFrame += str(abs(int(testFrame["current_1"]*10))).zfill(4)[-4:]
 cFrame += str(abs(int(testFrame["volt_b1"]*1000))).zfill(4)[-4:]
@@ -57,6 +102,7 @@ cFrame += str(abs(int(testFrame["current_2"]*10))).zfill(4)[-4:]
 cFrame += str(abs(int(testFrame["volt_b2"]*1000))).zfill(4)[-4:]
 cFrame += "0" + str(int(testFrame["gps_lat"]*1000000)).zfill(9)[-9:] if testFrame["gps_lat"] > 0 else "1" + str(abs(int(testFrame["gps_lat"]*1000000))).zfill(9)[-9:]
 cFrame += "0" + str(int(testFrame["gps_lon"]*1000000)).zfill(9)[-9:] if testFrame["gps_lon"] > 0 else "1" + str(abs(int(testFrame["gps_lon"]*1000000))).zfill(9)[-9:]
+cFrame += str(abs(int(testFrame["gps_alt"]*10))).zfill(5)[-5:]
 cFrame += str(abs(int(testFrame["gps_spd"]*10))).zfill(4)[-4:]
 cFrame += "0" + str(int(testFrame["a_x"]*10)).zfill(3)[-3:] if testFrame["a_x"] > 0 else "1" + str(abs(int(testFrame["a_x"]*10))).zfill(3)[-3:]
 cFrame += "0" + str(int(testFrame["a_y"]*10)).zfill(3)[-3:] if testFrame["a_y"] > 0 else "1" + str(abs(int(testFrame["a_y"]*10))).zfill(3)[-3:]
@@ -70,7 +116,7 @@ cFrameBin = decToBin(cFrame)
 print cFrameBin
 cFrameEncoded = binToAscii(cFrameBin)
 print cFrameEncoded
-print binToDec(asciiToBin(cFrameEncoded))
-
-#1479020362719001241100755190384000101024003727599511218268800019000010000010013912191324
-#10111110010101010110010001010111001101101110110100001100101000011000100100100111011110110010000100010110011100010110001010000011111110110110111111101100000001000111111101100011100110011100100001010001000100010101010100000110111001101110011111111110100100011100001000100101011101000101011100
+decodedDec = binToDec(asciiToBin(cFrameEncoded))
+print decode(decodedDec)
+print size
+print len(decodedDec)
