@@ -55,10 +55,10 @@ def frameAssembly(testFrame):
     cFrame += str(int(testFrame["time"]*1000))
     cFrame += str(testFrame["flight_mode"])
     cFrame += str(testFrame["squib_deployed"])
-    cFrame += str(abs(int(testFrame["temp"]*10))+1000).zfill(4)[-4:]
+    cFrame += str(abs(int(testFrame["temp"]*10))).zfill(4)[-4:]
     cFrame += str(abs(int(testFrame["pressure"]/10))).zfill(5)[-5:]
     cFrame += str(abs(int(testFrame["current_1"]*10))).zfill(4)[-4:]
-    cFrame += str(abs(int(testFrame["volt_b1"]*1000))).zfill(4)[-4:]
+    cFrame += str(abs(int(testFrame["volt_b1"]*1000))124).zfill(4)[-4:]
     cFrame += str(abs(int(testFrame["current_2"]*10))).zfill(4)[-4:]
     cFrame += str(abs(int(testFrame["volt_b2"]*1000))).zfill(4)[-4:]
     cFrame += "0" + str(int(testFrame["gps_lat"]*1000000)).zfill(9)[-9:] if testFrame["gps_lat"] > 0 else "1" + str(abs(int(testFrame["gps_lat"]*1000000))).zfill(9)[-9:]
