@@ -23,7 +23,7 @@ verrors = [0]
 
 def getFrame():
     raw_data = { "linux_time": (time.time()),
-                 "a_x": round(motion.accelerometer().z, 2),
+                 "a_x": round(motion.accelerometer().x, 2),
                  #"a_y": round(motion.accelerometer().y, roundOff)
                  }
     errors.append(raw_data)
