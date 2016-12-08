@@ -27,15 +27,15 @@ class DataPoint:
 	#name in dictionary
 	name = ""
 	#head digit for positivity
-	hasHead = 0
+	hasPositivity = 0
 	#amount of digits including the head
 	length = 0
 	#digits decimal offset count
 	decOffset = 0
 
-	def __init__(self, name, hasHead, length, decOffset):
+	def __init__(self, name, hasPositivity, length, decOffset):
 		self.name = name
-		self.hasHead = hasHead
+		self.hasPositivity = hasPositivity
 		self.length = length
 		self.decOffset = decOffset
 
@@ -85,38 +85,53 @@ size = 0
 for dataPoint in FRAME_STRUCT:
 	size +=  dataPoint.length
 
-def decode(raw):
-	if (len(raw) != size):
+def frameAssembly(testFrame):
+	cAssembly = ""
+	cAssembly += str(int(testFrame["time"]*1000))
+	cAssembly += str(testFrame["flight_mode"])
+	cAssembly += str(testFrame["squib_deployed"])
+	cAssembly += str(abs(int(testFrame["temp"]*10))).zfill(4)[-4:]
+	cAssembly += str(abs(int(testFrame["pressure"]/10))).zfill(5)[-5:]
+	cAssembly += str(abs(int(testFrame["current_1"]*10))).zfill(4)[-4:]
+	cAssembly += str(abs(int(testFrame["volt_b1"]*1000))).zfill(4)[-4:]
+	cAssembly += str(abs(int(testFrame["current_2"]*10))).zfill(4)[-4:]
+	cAssembly += str(abs(int(testFrame["volt_b2"]*1000))).zfill(4)[-4:]
+	cAssembly += "0" + str(int(testFrame["gps_lat"]*1000000)).zfill(9)[-9:] if testFrame["gps_lat"] > 0 else "1" + str(abs(int(testFrame["gps_lat"]*1000000))).zfill(9)[-9:]
+	cAssembly += "0" + str(int(testFrame["gps_lon"]*1000000)).zfill(9)[-9:] if testFrame["gps_lon"] > 0 else "1" + str(abs(int(testFrame["gps_lon"]*1000000))).zfill(9)[-9:]
+	cAssembly += str(abs(int(testFrame["gps_alt"]*10))).zfill(5)[-5:]
+	cAssembly += str(abs(int(testFrame["gps_spd"]*10))).zfill(4)[-4:]
+	cAssembly += "0" + str(int(testFrame["a_x"]*10)).zfill(3)[-3:] if testFrame["a_x"] > 0 else "1" + str(abs(int(testFrame["a_x"]*10))).zfill(3)[-3:]
+	cAssembly += "0" + str(int(testFrame["a_y"]*10)).zfill(3)[-3:] if testFrame["a_y"] > 0 else "1" + str(abs(int(testFrame["a_y"]*10))).zfill(3)[-3:]
+	cAssembly += "0" + str(int(testFrame["a_z"]*10)).zfill(3)[-3:] if testFrame["a_z"] > 0 else "1" + str(abs(int(testFrame["a_z"]*10))).zfill(3)[-3:]
+	cAssembly += "0" + str(int(testFrame["mag_x"]/10)).zfill(3)[-3:] if testFrame["mag_x"] > 0 else "1" + str(abs(int(testFrame["mag_x"]/10))).zfill(3)[-3:]
+	cAssembly += "0" + str(int(testFrame["mag_y"]/10)).zfill(3)[-3:] if testFrame["mag_y"] > 0 else "1" + str(abs(int(testFrame["mag_y"]/10))).zfill(3)[-3:]
+	cAssembly += "0" + str(int(testFrame["mag_z"]/10)).zfill(3)[-3:] if testFrame["mag_z"] > 0 else "1" + str(abs(int(testFrame["mag_z"]/10))).zfill(3)[-3:]
+	return cAssembly
+
+def frameDisassembly(decAssembly):
+	if (len(decAssembly) != size):
 		return "FrameWrongSize\n"
 
+	cFrame = {}
 
-cFrame = ""
-cFrame += str(int(testFrame["time"]*1000))
-cFrame += str(testFrame["flight_mode"])
-cFrame += str(testFrame["squib_deployed"])
-cFrame += str(abs(int(testFrame["temp"]*10))).zfill(4)[-4:]
-cFrame += str(abs(int(testFrame["pressure"]/10))).zfill(5)[-5:]
-cFrame += str(abs(int(testFrame["current_1"]*10))).zfill(4)[-4:]
-cFrame += str(abs(int(testFrame["volt_b1"]*1000))).zfill(4)[-4:]
-cFrame += str(abs(int(testFrame["current_2"]*10))).zfill(4)[-4:]
-cFrame += str(abs(int(testFrame["volt_b2"]*1000))).zfill(4)[-4:]
-cFrame += "0" + str(int(testFrame["gps_lat"]*1000000)).zfill(9)[-9:] if testFrame["gps_lat"] > 0 else "1" + str(abs(int(testFrame["gps_lat"]*1000000))).zfill(9)[-9:]
-cFrame += "0" + str(int(testFrame["gps_lon"]*1000000)).zfill(9)[-9:] if testFrame["gps_lon"] > 0 else "1" + str(abs(int(testFrame["gps_lon"]*1000000))).zfill(9)[-9:]
-cFrame += str(abs(int(testFrame["gps_alt"]*10))).zfill(5)[-5:]
-cFrame += str(abs(int(testFrame["gps_spd"]*10))).zfill(4)[-4:]
-cFrame += "0" + str(int(testFrame["a_x"]*10)).zfill(3)[-3:] if testFrame["a_x"] > 0 else "1" + str(abs(int(testFrame["a_x"]*10))).zfill(3)[-3:]
-cFrame += "0" + str(int(testFrame["a_y"]*10)).zfill(3)[-3:] if testFrame["a_y"] > 0 else "1" + str(abs(int(testFrame["a_y"]*10))).zfill(3)[-3:]
-cFrame += "0" + str(int(testFrame["a_z"]*10)).zfill(3)[-3:] if testFrame["a_z"] > 0 else "1" + str(abs(int(testFrame["a_z"]*10))).zfill(3)[-3:]
-cFrame += "0" + str(int(testFrame["mag_x"]/10)).zfill(3)[-3:] if testFrame["mag_x"] > 0 else "1" + str(abs(int(testFrame["mag_x"]/10))).zfill(3)[-3:]
-cFrame += "0" + str(int(testFrame["mag_y"]/10)).zfill(3)[-3:] if testFrame["mag_y"] > 0 else "1" + str(abs(int(testFrame["mag_y"]/10))).zfill(3)[-3:]
-cFrame += "0" + str(int(testFrame["mag_z"]/10)).zfill(3)[-3:] if testFrame["mag_z"] > 0 else "1" + str(abs(int(testFrame["mag_z"]/10))).zfill(3)[-3:]
+	for dataPoint in FRAME_STRUCT:
+		
+		if dataPoint.hasPositivity:
+			cFrame[dataPoint.name] = (int(decAssembly[0:1])*-2+1) * int(decAssembly[1:dataPoint.length]) * (float(10**dataPoint.decOffset))
+		else:
+			cFrame[dataPoint.name] = (int(decAssembly[0:dataPoint.length]) * (float(10**dataPoint.decOffset)))
+		
+		decAssembly = decAssembly[dataPoint.length:]
 
-print cFrame
-cFrameBin = decToBin(cFrame)
+	return cFrame
+
+cFrameAssembly = frameAssembly(testFrame)
+print cFrameAssembly
+cFrameBin = decToBin(cFrameAssembly)
 print cFrameBin
 cFrameEncoded = binToAscii(cFrameBin)
 print cFrameEncoded
 decodedDec = binToDec(asciiToBin(cFrameEncoded))
-print decode(decodedDec)
+print frameDisassembly(decodedDec)
 print size
 print len(decodedDec)
