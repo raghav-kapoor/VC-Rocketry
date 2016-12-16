@@ -5,7 +5,7 @@ from envirophat import motion
 #
 #
 #Time interval for acceleration calculations
-TIME_INT = 0.1 
+TIME_INT = 0.01 
 
 #Defining global variables before main loop
 #

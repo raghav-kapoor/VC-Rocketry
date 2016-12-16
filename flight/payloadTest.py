@@ -1,4 +1,4 @@
-""" Runs getFrame to collect data from sensors (all except current sensors)
+"python3-envirophat"" Runs getFrame to collect data from sensors (all except current sensors)
     Sends data to receive module using a transmitting radio module
     Runs when raspberry pi is booted up """
 
@@ -40,13 +40,7 @@ def getFrame():
     "a_y": round(motion.accelerometer().y, roundOff),
     "a_z": round(motion.accelerometer().z, roundOff),    
     "t": round(weather.temperature(), roundOff),                        
-    "p": round(weather.pressure(), roundOff),                           
-    "s1": round(ina219A.getShuntVoltage_mV(), roundOff),                
-    "b1": round(ina219A.getBusVoltage_V(), roundOff),                  
-    "c1": round(ina219A.getCurrent_mA(), roundOff),                     
-    "s2": round(ina219B.getShuntVoltage_mV(), roundOff),                
-    "b2": round(ina219B.getBusVoltage_V(), roundOff),                   
-    "c2": round(ina219B.getCurrent_mA(), roundOff),                     
+    "p": round(weather.pressure(), roundOff),                                                
     "lat": round(gpsd.fix.latitude, roundOff),                          
     "lon": round(gpsd.fix.longitude, roundOff),                         
     "alt": round(gpsd.fix.altitude, roundOff),                          

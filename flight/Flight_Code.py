@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-import time
+ximport time
 from Subfact_ina219 import INA219
 from envirophat import weather, motion
 import gps
