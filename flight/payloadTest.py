@@ -20,7 +20,11 @@ from subprocess import call
 #GPIO Pin Library
 import RPi.GPIO as GPIO
 
+#For xbee
 import serial
+from time import sleep
+ser = serial.Serial('/dev/ttyUSB0', 9600)
+string = ""
 
 #serial ports
 ser = serial.Serial('/dev/ttyUSB0', 9600)
@@ -81,13 +85,13 @@ if __name__ == '__main__':
     
     while True:
         getFrame()
-        print ("Accelerometer")
-        print (("x ") + (str)(frame[-1]["a_x"]))
-        print (("y ") + (str)(frame[-1]["a_y"]))
-        print (("z ") + (str)(frame[-1]["a_z"]))
-        print (("Temperature ") + (str)(frame[-1]["t"]))
-        print (("Pressure ") + (str)(frame[-1]["p"]))
-        print (("Latitude ") + (str)(frame[-1]["lat"]))
-        print (("Longitude ") + (str)(frame[-1]["lon"]))
-        print (("Altitude ") + (str)(frame[-1]["alt"]))
-        print (("Speed ") + (str)(frame[-1]["sp"]))
+        ser.write("Accelerometer")
+        ser.write(("x ") + (str)(frame[-1]["a_x"]))
+        ser.write(("y ") + (str)(frame[-1]["a_y"]))
+        ser.write(("z ") + (str)(frame[-1]["a_z"]))
+        ser.write(("Temperature ") + (str)(frame[-1]["t"]))
+        ser.write(("Pressure ") + (str)(frame[-1]["p"]))
+        ser.write(("Latitude ") + (str)(frame[-1]["lat"]))
+        ser.write(("Longitude ") + (str)(frame[-1]["lon"]))
+        ser.write(("Altitude ") + (str)(frame[-1]["alt"]))
+        ser.write(("Speed ") + (str)(frame[-1]["sp"]))
