@@ -1,4 +1,4 @@
-"python3-envirophat"" Runs getFrame to collect data from sensors (all except current sensors)
+""" python3-envirophat"" Runs getFrame to collect data from sensors (all except current sensors)
     Sends data to receive module using a transmitting radio module
     Runs when raspberry pi is booted up """
 
@@ -78,5 +78,16 @@ if __name__ == '__main__':
     #num = 0
     #while True:
     testFrame = getFrame()
-    for d in testFrame:
-        print d
+    
+    while True:
+        getFrame()
+        print ("Accelerometer")
+        print (("x ") + (str)(frame[-1]["a_x"]))
+        print (("y ") + (str)(frame[-1]["a_y"]))
+        print (("z ") + (str)(frame[-1]["a_z"]))
+        print (("Temperature ") + (str)(frame[-1]["t"]))
+        print (("Pressure ") + (str)(frame[-1]["p"]))
+        print (("Latitude ") + (str)(frame[-1]["lat"]))
+        print (("Longitude ") + (str)(frame[-1]["lon"]))
+        print (("Altitude ") + (str)(frame[-1]["alt"]))
+        print (("Speed ") + (str)(frame[-1]["sp"]))
