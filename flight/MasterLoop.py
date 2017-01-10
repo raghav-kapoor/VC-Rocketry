@@ -85,6 +85,7 @@ def getFrame():
     "current_1": round(ina219A.getCurrent_mA(), roundOff),                                    
     "volt_b2": round(ina219B.getBusVoltage_V(), roundOff),                   
     "current_2": round(ina219B.getCurrent_mA(), roundOff),
+                 #"gps_lat": 12, "gps_lon": 13, "gps_alt":14, "gps_spd":15,
     "gps_lat": round(gpsd.fix.latitude, roundOff),                          
     "gps_lon": round(gpsd.fix.longitude, roundOff),                         
     "gps_alt": round(gpsd.fix.altitude, roundOff),                          
@@ -117,36 +118,71 @@ tFrame = {
 	"mag_z": -3231 }
 
 
+ 
+#### ---------- GPS ---------- ####
+ 
+# GPS variables
+gpsd = None
+ 
 # GPS init
 call(["sudo", "systemctl", "stop", "gpsd.socket"])
 call(["sudo", "systemctl", "disable", "gpsd.socket"])
-call(["sudo", "gpsd", "/dev/ttyS0", "-F", "/var/run/gpsd.sock"])
-
+call(["sudo", "gpsd", "/dev/ttyUSB0", "-F", "/var/run/gpsd.sock"])
+ 
 class GpsPoller(threading.Thread):
-        def __init__(self):
-                threading.Thread.__init__(self)
-                global gpsd #bring it in scope
-                gpsd = gps(mode = WATCH_ENABLE) #starting the stream of info
-                self.current_value = None
-                self.running = True #setting the thread running to true
-        def run(self):
-                global gpsd
-                while gpsp.running:
-                        gpsd.next()
-
+    def __init__(self):
+        threading.Thread.__init__(self)
+        global gpsd #bring it in scope
+        gpsd = gps(mode = WATCH_ENABLE) #starting the stream of info
+        self.current_value = None
+        self.running = True #setting the thread running to true
+    def run(self):
+        global gpsd
+        while gpsp.running:
+            gpsd.next()
+ 
 if __name__ == '__main__':
     gpsp = GpsPoller()
     gpsp.start()
-    # Waits for GPS to get a Fix
-    num = 0
-    while True:
-        getFrame()
-        testFrame = frame[num]
-        cFrame = frameAssembly(testFrame)
-        cFrameBin = decToBin(cFrame)
-        cFrameEncoded = binToAscii(cFrameBin)
-        ser.write(cFrameEncoded)
-        startfile.write(cFrameEncoded)
-        startfile.write("\n")
-        num = num + 1
+    go = True
+    while go:
+        if gpsd.fix.latitude) != 0.0:
+            go = False
+            print("GPS Locked")
+        else:
+            time.sleep(0.5)
+ 
 
+### GPS init
+##call(["sudo", "systemctl", "stop", "gpsd.socket"])
+##call(["sudo", "systemctl", "disable", "gpsd.socket"])
+##call(["sudo", "gpsd", "/dev/ttyS0", "-F", "/var/run/gpsd.sock"])
+##
+##class GpsPoller(threading.Thread):
+##        def __init__(self):
+##                threading.Thread.__init__(self)
+##                global gpsd #bring it in scope
+##                gpsd = gps(mode = WATCH_ENABLE) #starting the stream of info
+##                self.current_value = None
+##                self.running = True #setting the thread running to true
+##        def run(self):
+##                global gpsd
+##                while gpsp.running:
+##                        gpsd.next()
+##
+##time.sleep(10)
+##gpsp = GpsPoller()
+##gpsp.start()
+### Waits for GPS to get a Fix
+num = 0
+while True:
+    getFrame()
+    currFrame = frame[num]
+    cFrame = frameAssembly(currFrame)
+    cFrameBin = decToBin(cFrame)
+    cFrameEncoded = binToAscii(cFrameBin)
+    ser.write(cFrameEncoded)
+    startfile.write(cFrameEncoded)
+    startfile.write("\n")
+    num = num + 1
+    time.sleep(0.02)
