@@ -5,4 +5,4 @@ string = ""
 for i in range(10000000): 
   print i
   if (i%1 == 0):
-    ser.write(i)
+    ser.write(str(i))
