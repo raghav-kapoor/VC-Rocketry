@@ -146,7 +146,7 @@ if __name__ == '__main__':
     gpsp.start()
     go = True
     while go:
-        if gpsd.fix.latitude) != 0.0:
+        if gpsd.fix.latitude != 0.0:
             go = False
             print("GPS Locked")
         else:

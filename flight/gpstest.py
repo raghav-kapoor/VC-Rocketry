@@ -24,9 +24,9 @@ class GpsPoller(threading.Thread):
 if __name__ == '__main__':
     gpsp = GpsPoller()
     gpsp.start()
-    print type(gpsd.fix.latitude)
     go = True
     while go:
+	print gpsd.fix.latitude
         if gpsd.fix.latitude != 0.0:
             go = False
             print("GPS Locked")
