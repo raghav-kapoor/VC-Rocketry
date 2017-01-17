@@ -10,6 +10,7 @@ from subprocess import call
 import RPi.GPIO as GPIO
 import serial
 
+
 ser = serial.Serial('/dev/ttyUSB0', 9600)
 startfile = open("teststart.txt", "w")
 
@@ -176,13 +177,19 @@ if __name__ == '__main__':
 ### Waits for GPS to get a Fix
 num = 0
 while True:
-    getFrame()
-    currFrame = frame[num]
-    cFrame = frameAssembly(currFrame)
-    cFrameBin = decToBin(cFrame)
-    cFrameEncoded = binToAscii(cFrameBin)
-    ser.write(cFrameEncoded)
-    startfile.write(cFrameEncoded)
-    startfile.write("\n")
-    num = num + 1
-    time.sleep(0.02)
+    try:
+   	 getFrame()
+   	 currFrame = frame[num]
+   	 cFrame = frameAssembly(currFrame)
+   	 cFrameBin = decToBin(cFrame)
+   	 cFrameEncoded = binToAscii(cFrameBin)
+   	 ser.write(cFrameEncoded)
+   	 startfile.write(cFrameEncoded)
+   	 startfile.write("\n")
+   	 num = num + 1
+   	 time.sleep(0.02)
+    except (KeyboardInterrupt):
+  	break
+ser.close()
+    
+
