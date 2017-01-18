@@ -1,8 +1,8 @@
 import serial
 from time import sleep
-ser = serial.Serial('/dev/ttyUSB0', 9600)
+ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=None)
 string = ""
-for i in range(1000000): 
+while True: 
   print i
   ser.write(str(i))
-
+ser.close()
