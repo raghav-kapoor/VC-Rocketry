@@ -97,26 +97,6 @@ def getFrame():
                  }                              
     frame.append(raw_data)
 
-tFrame = { 
-	"time": time.time(),
-	"flight_mode": 0,
-	"squib_deployed": 0,
-	"temp": 24.1167,
-	"pressure": 100753.5629,
-	"current_1": -519.0,
-	"volt_b1": 3.84,
-	"current_2": -1.0,
-	"volt_b2": 1.024,
-	"gps_lat": 37.275995,
-	"gps_lon": -121.82688,
-	"gps_alt": 143.3,
-	"gps_spd": 1.999,
-	"a_x": 0.0677,
-	"a_y": -0.0447,
-	"a_z": 1.0335,
-	"mag_x": 1395,
-	"mag_y": -2182,
-	"mag_z": -3231 }
 
 
  
