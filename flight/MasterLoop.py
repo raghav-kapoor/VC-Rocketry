@@ -97,26 +97,6 @@ def getFrame():
                  }                              
     frame.append(raw_data)
 
-tFrame = { 
-	"time": time.time(),
-	"flight_mode": 0,
-	"squib_deployed": 0,
-	"temp": 24.1167,
-	"pressure": 100753.5629,
-	"current_1": -519.0,
-	"volt_b1": 3.84,
-	"current_2": -1.0,
-	"volt_b2": 1.024,
-	"gps_lat": 37.275995,
-	"gps_lon": -121.82688,
-	"gps_alt": 143.3,
-	"gps_spd": 1.999,
-	"a_x": 0.0677,
-	"a_y": -0.0447,
-	"a_z": 1.0335,
-	"mag_x": 1395,
-	"mag_y": -2182,
-	"mag_z": -3231 }
 
 
  
@@ -152,44 +132,24 @@ if __name__ == '__main__':
             print("GPS Locked")
         else:
             time.sleep(0.5)
- 
 
-### GPS init
-##call(["sudo", "systemctl", "stop", "gpsd.socket"])
-##call(["sudo", "systemctl", "disable", "gpsd.socket"])
-##call(["sudo", "gpsd", "/dev/ttyS0", "-F", "/var/run/gpsd.sock"])
-##
-##class GpsPoller(threading.Thread):
-##        def __init__(self):
-##                threading.Thread.__init__(self)
-##                global gpsd #bring it in scope
-##                gpsd = gps(mode = WATCH_ENABLE) #starting the stream of info
-##                self.current_value = None
-##                self.running = True #setting the thread running to true
-##        def run(self):
-##                global gpsd
-##                while gpsp.running:
-##                        gpsd.next()
-##
-##time.sleep(10)
-##gpsp = GpsPoller()
-##gpsp.start()
-### Waits for GPS to get a Fix
 num = 0
 while True:
     try:
-   	 getFrame()
-   	 currFrame = frame[num]
-   	 cFrame = frameAssembly(currFrame)
-   	 cFrameBin = decToBin(cFrame)
-   	 cFrameEncoded = binToAscii(cFrameBin)
-   	 ser.write(cFrameEncoded)
-   	 startfile.write(cFrameEncoded)
-   	 startfile.write("\n")
-   	 num = num + 1
-   	 time.sleep(0.02)
+        getFrame()
+        currFrame = frame[num]
+        cFrame = frameAssembly(currFrame)
+        cFrameBin = decToBin(cFrame)
+        cFrameEncoded = binToAscii(cFrameBin)
+        ser.write(cFrameEncoded)
+        startfile.write(cFrameEncoded)
+        startfile.write("\n")
+        num += 1
+        time.sleep(0.02)
     except (KeyboardInterrupt):
-  	break
-ser.close()
-    
+        gpsp.running = False
+        gpsp.join()
+        startfile.close()
+        ser.close()  	
+        break    
 
