@@ -118,12 +118,11 @@ FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, -1))
 num = 0
 while True:
     try:
-        dataline = ser.read(FRAMESIZE)
-        decodedData = bintoDec(asciiToBin(dataLine))
+        dataLine = ser.read(FRAMESIZE)
+        decodedData = binToDec(asciiToBin(dataLine))
         disassembledData = frameDisassembly(decodedData)
         rxfile.write(disassembledData)
         rxfile.write("\n")
-        print(size)
         print(disassembledData)
         num+=1
     except (KeyboardInterrupt):
