@@ -186,10 +186,8 @@ if __name__ == '__main__':
             print("GPS NOT LOCKED")
             time.sleep(0.5)
 
-num = 0
-while True:
-    try:
-        getFrame()
+def frame():
+	getFrame()
         currentFrame = frame[-1]
         assembledFrame = frameAssembly(currentFrame)
         cFrameBin = decToBin(assembledFrame)
@@ -197,14 +195,12 @@ while True:
         ser.write(cFrameEncoded)
         txfile.write(cFrameEncoded)
         txfile.write("\n")
-        num += 1
         time.sleep(0.05)
-    except (KeyboardInterrupt):
-        gpsp.running = False
+def stopProcess():
+	gpsp.running = False
         gpsp.join()
         txfile.close()
-        ser.close()  	
-        break
+        ser.close()
 
 def pressureChangeCheck():
     p_flag = 0
@@ -227,44 +223,20 @@ while True:
                     if(round(motion.accelerometer().x, roundOff) >= 29):#...exit launchpad. 29 = 3g
                         while True:
                             try:
-                                getFrame()
-                                currentFrame = frame[-1]
-                                assembledFrame = frameAssembly(currentFrame)
-                                cFrameBin = decToBin(assembledFrame)
-                                cFrameEncoded = binToAscii(cFrameBin)
-                                ser.write(cFrameEncoded)
-                                txfile.write(cFrameEncoded)
-                                txfile.write("\n")
-                                num += 1
-                                time.sleep(0.05)
+				frame()
                                 if(pressureChangeCheck() == 1):
                                     #Fire parachute
                                     while True:
                                         try:
-                                            getFrame()
-                                            currentFrame = frame[-1]
-                                            assembledFrame = frameAssembly(currentFrame)
-                                            cFrameBin = decToBin(assembledFrame)
-                                            cFrameEncoded = binToAscii(cFrameBin)
-                                            ser.write(cFrameEncoded)
-                                            txfile.write(cFrameEncoded)
-                                            txfile.write("\n")
-                                            num += 1
-                                            time.sleep(0.05)
+					    frame()
                                             if(round(gpsd.fix.altitude, roundOff) < init_altitude*2):
                                                 #setup recovery mode
                                                 flight_end = 1
                                         except (flight_end == 1):
-                                            gpsp.running = False
-                                            gpsp.join()
-                                            txfile.close()
-                                            ser.close()  	
-                                            break
+					    stopProcess()
+					    break
                             except (flight_end == 1):
-                                gpsp.running = False
-                                gpsp.join()
-                                txfile.close()
-                                ser.close()  	
+                                stopProcess() 	
                                 break
                 if(flight_end == 1):
                     break
