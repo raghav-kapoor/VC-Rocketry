@@ -60,6 +60,8 @@ testFrame = {
 	"mag_y": -2182,
 	"mag_z": -3231 }
 
+#Numbering system: DataPoint("data type", positive(0)/negative(1), digits, decimals)
+#93 digits ish - need testing
 FRAME_STRUCT = []
 FRAME_STRUCT.append(DataPoint("time", 0, 13, 0))
 FRAME_STRUCT.append(DataPoint("flight_mode", 0, 1, 0))
