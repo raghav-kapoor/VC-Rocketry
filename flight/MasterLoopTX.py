@@ -124,10 +124,12 @@ FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, -1))
 """Generates frames of data that contain: raw acceleration values,
 magnetometer, gps, and etc. and adds it to the frames array
 """
+global flightMode = 0
+global squibDeployed = 0
 def getFrame():
     raw_data = { "time" : (time.time()),
-                 "flight_mode": 0,
-                 "squib_deployed": 0,
+                 "flight_mode": flightMode,
+                 "squib_deployed": squibDeployed,
                  "a_x": round(motion.accelerometer().x, roundOff),
                  "a_y": round(motion.accelerometer().y, roundOff),
                  "a_z": round(motion.accelerometer().z, roundOff),
@@ -210,8 +212,7 @@ def apogeeCheck():
     if(pressureChange is less than a certain value):
         p_flag = 1
     return p_flag
-
-global init_altitude = round(gpsd.fix.altitude, roundOff)
+`global init_altitude = round(gpsd.fix.altitude, roundOff)
 def landCheck():
 	if abs(round(gpsd.fix.altitude, roundOff) - init_altitude) < 30
 	
@@ -223,11 +224,13 @@ while mode = "pre_one":
 while mode = "pre_two:
 	sendFrame()
 	if frame[-1]["voltage_2"] > 9.0:
+		flightMode = 1
 		mode = "flight"
 while mode = "flight":
 	sendFrame()
 	if apogeeCheck() == 1:
 		#trigger squib
+		squibDeployed = 1
 		mode = "descent"
 while mode = "descent":
 	sendFrame()
