@@ -128,8 +128,7 @@ global flightMode = 0
 global squibDeployed = 0
 global altArray = []
 def getFrame():
-	alt = round(weather.altitude(), roundOff)
-	altArray.append(alt)
+	altArray.append(round(weather.altitude(qnh=1020), roundOff))
     raw_data = { "time" : (time.time()),
                  "flight_mode": flightMode,
                  "squib_deployed": squibDeployed,
