@@ -79,26 +79,26 @@ def frameAssembly(testFrame):
 	cAssembly += "0" + str(int(testFrame["mag_z"]/10)).zfill(3)[-3:] if testFrame["mag_z"] > 0 else "1" + str(abs(int(testFrame["mag_z"]/10))).zfill(3)[-3:]
 	return cAssembly
 
-testFrame = { 
-	"time": time.time(),
-	"flight_mode": 0,
-	"squib_deployed": 0,
-	"temp": 24.1167,
-	"pressure": 100753.5629,
-	"current_1": -519.0,
-	"volt_b1": 3.84,
-	"current_2": -1.0,
-	"volt_b2": 1.024,
-	"gps_lat": 37.275995,
-	"gps_lon": -121.82688,
-	"gps_alt": 143.3,
-	"gps_spd": 1.999,
-	"a_x": 0.0677,
-	"a_y": -0.0447,
-	"a_z": 1.0335,
-	"mag_x": 1395,
-	"mag_y": -2182,
-	"mag_z": -3231 }
+# testFrame = { 
+# 	"time": time.time(),
+# 	"flight_mode": 0,
+# 	"squib_deployed": 0,
+# 	"temp": 24.1167,
+# 	"pressure": 100753.5629,
+# 	"current_1": -519.0,
+# 	"volt_b1": 3.84,
+# 	"current_2": -1.0,
+# 	"volt_b2": 1.024,
+# 	"gps_lat": 37.275995,
+# 	"gps_lon": -121.82688,
+# 	"gps_alt": 143.3,
+# 	"gps_spd": 1.999,
+# 	"a_x": 0.0677,
+# 	"a_y": -0.0447,
+# 	"a_z": 1.0335,
+# 	"mag_x": 1395,
+# 	"mag_y": -2182,
+# 	"mag_z": -3231 }
 
 FRAME_STRUCT = []
 FRAME_STRUCT.append(DataPoint("time", 0, 13, 0))
@@ -126,7 +126,10 @@ magnetometer, gps, and etc. and adds it to the frames array
 """
 global flightMode = 0
 global squibDeployed = 0
+global altArray = []
 def getFrame():
+	alt = round(weather.altitude(), roundOff)
+	altArray.append(alt)
     raw_data = { "time" : (time.time()),
                  "flight_mode": flightMode,
                  "squib_deployed": squibDeployed,
@@ -209,7 +212,8 @@ def sendFrame():
 
 def apogeeCheck():
 	#Check for change in pressure and store in pressureChange
-	if(pressureChange is less than a certain value):
+	altChange = altArray[-1] - altArray[-2]
+	if altChange < 0.0 :
 		return 1
 	else:
 		return 0
