@@ -182,11 +182,13 @@ if __name__ == '__main__':
     go = True
     while go:
         if (gpsd.fix.latitude > 0.0) or (gpsd.fix.latitude < 0.0):
+	    	# print("GPS Locked")
             go = False
-            print("GPS Locked")
         else:
-            print("GPS NOT LOCKED")
+            # print("GPS NOT LOCKED")
             time.sleep(0.5)
+
+#### ---------- Main Loop ---------- ####
 
 def sendFrame():
 	try:
@@ -201,21 +203,25 @@ def sendFrame():
 		time.sleep(0.05)
 	except(KeyboardInterrupt):
 		gpsp.running = False
-        	gpsp.join()
-        	txfile.close()
-        	ser.close()
+        gpsp.join()
+        txfile.close()
+        ser.close()
 
 def apogeeCheck():
-    a_flag = 0
-    altChange = 0
-    #Check for change in pressure and store in pressureChange
-    if(pressureChange is less than a certain value):
-        p_flag = 1
-    return p_flag
-`global init_altitude = round(gpsd.fix.altitude, roundOff)
+	#Check for change in pressure and store in pressureChange
+	if(pressureChange is less than a certain value):
+		return 1
+	else:
+		return 0
+
+global init_altitude = round(gpsd.fix.altitude, roundOff)
 def landCheck():
-	if abs(round(gpsd.fix.altitude, roundOff) - init_altitude) < 30
-	
+	if abs(round(gpsd.fix.altitude, roundOff) - init_altitude) < 30:
+		return 1
+	else:
+		return 0
+
+
 global mode = "pre_one"
 while mode = "pre_one":
 	sendFrame()
@@ -238,40 +244,4 @@ while mode = "descent":
 		mode = "recovery"
 while True:
 	sendFrame()
-
-		
-    
-# #Flight modes code
-# flight_end = 0
-# while True:
-#     if(round(ina219A.getCurrent_mA(), roundOff) >= 3): #Condition to exit prelaunch 1
-#         #Set up prelaunch 2
-#         while True:
-#             if(round(ina219B.getBusVoltage_V(), roundOff) >= 9): #...exit prelaunch 2
-#                 #Set up launchpad
-#                 init_altitude = round(gpsd.fix.altitude, roundOff)
-#                 while True:
-#                     if(round(motion.accelerometer().x, roundOff) >= 29):#...exit launchpad. 29 = 3g
-#                         while True:
-#                             try:
-# 				frame()
-#                                 if(apogeeCheck() == 1):
-#                                     #Fire parachute
-#                                     while True:
-#                                         try:
-# 					    frame()
-#                                             if(round(gpsd.fix.altitude, roundOff) < init_altitude*2):
-#                                                 #setup recovery mode
-#                                                 flight_end = 1
-#                                         except (flight_end == 1):
-# 					    stopProcess()
-# 					    break
-#                             except (flight_end == 1):
-#                                 stopProcess() 	
-#                                 break
-#                 if(flight_end == 1):
-#                     break
-#         if(flight_end == 1):
-#             break
-#     if(flight_end == 1):
-#         break
+#### ---------- End of Main Loop ---------- ####
