@@ -129,7 +129,7 @@ def getFrame():
     raw_data = { "time" : (time.time()),
                  "flight_mode": 0,
                  "squib_deployed": 0,
-                 "a_x": round(motion.accelerometer().x, roundOff)
+                 "a_x": round(motion.accelerometer().x, roundOff),
                  "a_y": round(motion.accelerometer().y, roundOff),
                  "a_z": round(motion.accelerometer().z, roundOff),
                  "temp": round(weather.temperature(), roundOff),
@@ -138,6 +138,10 @@ def getFrame():
                  "current_1": round(ina219A.getCurrent_mA(), roundOff),
                  "volt_b2": round(ina219B.getBusVoltage_V(), roundOff),
                  "current_2": round(ina219B.getCurrent_mA(), roundOff),
+#"gps_lat": 11,
+#"gps_lon": 12,
+#"gps_alt": 13,
+#"gps_spd": 14,
                  "gps_lat": round(gpsd.fix.latitude, roundOff),
                  "gps_lon": round(gpsd.fix.longitude, roundOff),
                  "gps_alt": round(gpsd.fix.altitude, roundOff),
@@ -180,13 +184,14 @@ if __name__ == '__main__':
             go = False
             print("GPS Locked")
         else:
+            print("GPS NOT LOCKED")
             time.sleep(0.5)
 
 num = 0
 while True:
     try:
         getFrame()
-        currentFrame = frame[num]
+        currentFrame = frame[-1]
         assembledFrame = frameAssembly(currentFrame)
         cFrameBin = decToBin(assembledFrame)
         cFrameEncoded = binToAscii(cFrameBin)
@@ -194,7 +199,7 @@ while True:
         txfile.write(cFrameEncoded)
         txfile.write("\n")
         num += 1
-        time.sleep(0.02)
+        time.sleep(0.05)
     except (KeyboardInterrupt):
         gpsp.running = False
         gpsp.join()

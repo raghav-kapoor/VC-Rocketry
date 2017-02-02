@@ -123,7 +123,11 @@ while True:
         disassembledData = frameDisassembly(decodedData)
         rxfile.write(str(disassembledData))
         rxfile.write("\n")
+<<<<<<< HEAD
         print(str(disassembledData))
+=======
+        print(disassembledData)
+>>>>>>> 664b6f89f026d459e62a1aecf71ecc1cbbb83bb2
         num+=1
     except (KeyboardInterrupt):
         ser.close()
