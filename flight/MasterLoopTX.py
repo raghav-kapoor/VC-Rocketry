@@ -79,27 +79,6 @@ def frameAssembly(testFrame):
 	cAssembly += "0" + str(int(testFrame["mag_z"]/10)).zfill(3)[-3:] if testFrame["mag_z"] > 0 else "1" + str(abs(int(testFrame["mag_z"]/10))).zfill(3)[-3:]
 	return cAssembly
 
-# testFrame = { 
-# 	"time": time.time(),
-# 	"flight_mode": 0,
-# 	"squib_deployed": 0,
-# 	"temp": 24.1167,
-# 	"pressure": 100753.5629,
-# 	"current_1": -519.0,
-# 	"volt_b1": 3.84,
-# 	"current_2": -1.0,
-# 	"volt_b2": 1.024,
-# 	"gps_lat": 37.275995,
-# 	"gps_lon": -121.82688,
-# 	"gps_alt": 143.3,
-# 	"gps_spd": 1.999,
-# 	"a_x": 0.0677,
-# 	"a_y": -0.0447,
-# 	"a_z": 1.0335,
-# 	"mag_x": 1395,
-# 	"mag_y": -2182,
-# 	"mag_z": -3231 }
-
 FRAME_STRUCT = []
 FRAME_STRUCT.append(DataPoint("time", 0, 13, 0))
 FRAME_STRUCT.append(DataPoint("flight_mode", 0, 1, 0))
@@ -141,10 +120,6 @@ def getFrame():
                  "current_1": round(ina219A.getCurrent_mA(), roundOff),
                  "volt_b2": round(ina219B.getBusVoltage_V(), roundOff),
                  "current_2": round(ina219B.getCurrent_mA(), roundOff),
-#"gps_lat": 11,
-#"gps_lon": 12,
-#"gps_alt": 13,
-#"gps_spd": 14,
                  "gps_lat": round(gpsd.fix.latitude, roundOff),
                  "gps_lon": round(gpsd.fix.longitude, roundOff),
                  "gps_alt": round(gpsd.fix.altitude, roundOff),
@@ -164,7 +139,8 @@ gpsd = None
 # GPS init
 call(["sudo", "systemctl", "stop", "gpsd.socket"])
 call(["sudo", "systemctl", "disable", "gpsd.socket"])
-call(["sudo", "gpsd", "/dev/ttyUSB0", "-F", "/var/run/gpsd.sock"])
+call(["sudo", "killall", "gpsd"])
+call(["sudo", "gpsd", "/dev/ttyS0", "-F", "/var/run/gpsd.sock"])
  
 class GpsPoller(threading.Thread):
     def __init__(self):
@@ -181,11 +157,10 @@ class GpsPoller(threading.Thread):
 if __name__ == '__main__':
     gpsp = GpsPoller()
     gpsp.start()
-    go = True
-    while go:
+    while True:
         if ((gpsd.fix.latitude > 0.0) or (gpsd.fix.latitude < 0.0)) and ((gpsd.fix.altitude > 0.0) or (gpsd.fix.altitude < 0.0)):
 	    	# print("GPS Locked")
-            go = False
+            break
         else:
             # print("GPS NOT LOCKED")
             time.sleep(0.5)
@@ -199,9 +174,10 @@ def sendFrame():
 		assembledFrame = frameAssembly(currentFrame)
 		cFrameBin = decToBin(assembledFrame)
 		cFrameEncoded = binToAscii(cFrameBin)
-		ser.write(cFrameEncoded)
-		txfile.write(cFrameEncoded)
+		ser.write("\x7F\x7F" + cFrameEncoded + "\x00\x00")
+		txfile.write(str(currentFrame))
 		txfile.write("\n")
+		print(str(currentFrame))
 		time.sleep(0.05)
 	except(KeyboardInterrupt):
         gpsp.running = False
