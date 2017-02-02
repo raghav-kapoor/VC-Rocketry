@@ -183,7 +183,7 @@ if __name__ == '__main__':
     gpsp.start()
     go = True
     while go:
-        if (gpsd.fix.latitude > 0.0) or (gpsd.fix.latitude < 0.0):
+        if ((gpsd.fix.latitude > 0.0) or (gpsd.fix.latitude < 0.0)) and ((gpsd.fix.altitude > 0.0) or (gpsd.fix.altitude < 0.0)):
 	    	# print("GPS Locked")
             go = False
         else:
@@ -204,7 +204,7 @@ def sendFrame():
 		txfile.write("\n")
 		time.sleep(0.05)
 	except(KeyboardInterrupt):
-		gpsp.running = False
+        gpsp.running = False
         gpsp.join()
         txfile.close()
         ser.close()
@@ -240,10 +240,12 @@ while mode = "flight":
 	if apogeeCheck() == 1:
 		#trigger squib
 		squibDeployed = 1
+		flightmode = 2
 		mode = "descent"
 while mode = "descent":
 	sendFrame()
 	if landCheck() == 1:
+		flightmode = 3
 		mode = "recovery"
 while True:
 	sendFrame()
