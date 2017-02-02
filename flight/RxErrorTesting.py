@@ -95,38 +95,48 @@ testFrame = {
 	"mag_z": -3231 }
 
 FRAME_STRUCT = []
-FRAME_STRUCT.append(DataPoint("time", 0, 13, 0))
+FRAME_STRUCT.append(DataPoint("time", 0, 13, -3))
 FRAME_STRUCT.append(DataPoint("flight_mode", 0, 1, 0))
 FRAME_STRUCT.append(DataPoint("squib_deployed", 0, 1, 0))
-FRAME_STRUCT.append(DataPoint("temp", 0, 4, 1))
-FRAME_STRUCT.append(DataPoint("pressure", 0, 5, -1))
-FRAME_STRUCT.append(DataPoint("current_1", 0, 4, 1))
-FRAME_STRUCT.append(DataPoint("volt_b1", 0, 4, 3))
-FRAME_STRUCT.append(DataPoint("current_2", 0, 4, 1))
-FRAME_STRUCT.append(DataPoint("volt_b2", 0, 4, 3))
-FRAME_STRUCT.append(DataPoint("gps_lat", 1, 10, 6))
-FRAME_STRUCT.append(DataPoint("gps_lon", 1, 10, 6))
-FRAME_STRUCT.append(DataPoint("gps_alt", 0, 5, 1))
-FRAME_STRUCT.append(DataPoint("gps_spd", 0, 4, 1))
-FRAME_STRUCT.append(DataPoint("a_x", 1, 4, 1))
-FRAME_STRUCT.append(DataPoint("a_y", 1, 4, 1))
-FRAME_STRUCT.append(DataPoint("a_z", 1, 4, 1))
-FRAME_STRUCT.append(DataPoint("mag_x", 1, 4, -1))
-FRAME_STRUCT.append(DataPoint("mag_y", 1, 4, -1))
-FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, -1))
+FRAME_STRUCT.append(DataPoint("temp", 0, 4, -1))
+FRAME_STRUCT.append(DataPoint("pressure", 0, 5, 1))
+FRAME_STRUCT.append(DataPoint("current_1", 0, 4, -1))
+FRAME_STRUCT.append(DataPoint("volt_b1", 0, 4, -3))
+FRAME_STRUCT.append(DataPoint("current_2", 0, 4, -1))
+FRAME_STRUCT.append(DataPoint("volt_b2", 0, 4, -3))
+FRAME_STRUCT.append(DataPoint("gps_lat", 1, 10, -6))
+FRAME_STRUCT.append(DataPoint("gps_lon", 1, 10, -6))
+FRAME_STRUCT.append(DataPoint("gps_alt", 0, 5, -1))
+FRAME_STRUCT.append(DataPoint("gps_spd", 0, 4, -1))
+FRAME_STRUCT.append(DataPoint("a_x", 1, 4, -1))
+FRAME_STRUCT.append(DataPoint("a_y", 1, 4, -1))
+FRAME_STRUCT.append(DataPoint("a_z", 1, 4, -1))
+FRAME_STRUCT.append(DataPoint("mag_x", 1, 4, 1))
+FRAME_STRUCT.append(DataPoint("mag_y", 1, 4, 1))
+FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, 1))
 
-num = 0
-while True:
-    try:
-        dataLine = ser.read(FRAMESIZE)
-        decodedData = binToDec(asciiToBin(dataLine))
-        disassembledData = frameDisassembly(decodedData)
-        rxfile.write(str(disassembledData))
-        rxfile.write("\n")
-        print(str(disassembledData))
-        num+=1
-    except (KeyboardInterrupt):
-        ser.close()
-        rxfile.close()
-        break
+fCount = 0
+start = time.time()
+while (start-time.time())<60:
+    tempLine = ""
+    if (ser.read(1) == "\x7F"):
+        if (ser.read(1) == "\x7F"):
+            tempLine += ser.read(2)
+            while ((tempLine[-1] != "\x00" or tempLine[-2] != "\x00") and len(tempLine) < (FRAMESIZE + 2)):
+                tempLine+=ser.read(1)
+            if len(tempLine) > (FRAMESIZE + 2):
+                print("2 NULL NOT DETECTED WITHIN FRAME SIZE")
+            if (tempLine[-1] == "\x00" and tempLine[-2] == "\x00" and len(tempLine) == (FRAMESIZE + 2)):
+                decodedData = binToDec(asciiToBin(tempLine[:-2]))
+                disassembledData = frameDisassembly(decodedData)
+                rxfile.write(str(disassembledData))
+                rxfile.write("\n")
+                print("SUCCESSFUL FRAME RECEPTION")
+                print(str(disassembledData))
+                fCount += 1
+            else:
+                print("FRAME WRONG SIZE")
+            tempLine = ""
+ser.close()
+rxfile.close()
 
