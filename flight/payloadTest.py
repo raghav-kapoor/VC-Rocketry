@@ -21,13 +21,13 @@ from subprocess import call
 import RPi.GPIO as GPIO
 
 #For xbee
-import serial
-from time import sleep
-ser = serial.Serial('/dev/ttyUSB0', 9600)
-string = ""
+#import serial
+#from time import sleep
+#ser = serial.Serial('/dev/ttyUSB0', 9600)
+#string = ""
 
 #serial ports
-ser = serial.Serial('/dev/ttyUSB0', 9600)
+#ser = serial.Serial('/dev/ttyUSB0', 9600)
 
 #roundOff is the number of decimals in the data
 roundOff = 4
@@ -85,11 +85,11 @@ if __name__ == '__main__':
     
     while True:
         getFrame()
-        ser.write((frame[-1]["a_x"]))
-        ser.write((frame[-1]["a_y"]))
-        ser.write((frame[-1]["a_z"]))
-        ser.write((frame[-1]["t"]))
-        ser.write((frame[-1]["p"]))
-        ser.write((frame[-1]["lat"]))
-        ser.write((frame[-1]["lon"]))
-        ser.write((frame[-1]["sp"]))
+#        ser.write((frame[-1]["a_x"]))
+#        ser.write((frame[-1]["a_y"]))
+#        ser.write((frame[-1]["a_z"]))
+#        ser.write((frame[-1]["t"]))
+#        ser.write((frame[-1]["p"]))
+#        ser.write((frame[-1]["lat"]))
+#        ser.write((frame[-1]["lon"]))
+#        ser.write((frame[-1]["sp"]))
