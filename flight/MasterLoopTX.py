@@ -165,8 +165,6 @@ if __name__ == '__main__':
             # print("GPS NOT LOCKED")
             time.sleep(0.5)
 
-#### ---------- Main Loop ---------- ####
-
 def sendFrame():
 	try:
 		getFrame()
@@ -200,6 +198,7 @@ def landCheck():
 	else:
 		return 0
 
+#### ---------- Main Loop ---------- ####
 
 global mode = "pre_one"
 while mode = "pre_one":
