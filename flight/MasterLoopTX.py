@@ -10,21 +10,56 @@ from subprocess import call
 import RPi.GPIO as GPIO
 import serial
 
+#### ---------- GPS ---------- ####
+# GPS init
+call(["sudo", "systemctl", "stop", "gpsd.socket"])
+call(["sudo", "systemctl", "disable", "gpsd.socket"])
+call(["sudo", "killall", "gpsd"])
+call(["sudo", "gpsd", "/dev/ttyS0", "-F", "/var/run/gpsd.sock"])
+#end GPS init
+ 
+# GPS variables
+gpsd = None
+ 
+class GpsPoller(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        global gpsd #bring it in scope
+        gpsd = gps(mode = WATCH_ENABLE) #starting the stream of info
+        self.current_value = None
+        self.running = True #setting the thread running to true
+    def run(self):
+        global gpsd
+        while gpsp.running:
+            gpsd.next()
+
 ser = serial.Serial('/dev/ttyUSB0', 9600)
 txfile = open("testsend.txt", "w")
 FRAMESIZE = 39
 DECSIZE = 93
-
-#roundOff is the number of decimals in the data
-#ROUNDOFF of 2 is confirmed to work
-roundOff = 3
+QNH = round(weather.pressure()/100,2)
+roundOff = 3 #2 is confirmed to work
 
 #Defines I2C address of current sensors
 ina219A = INA219(0x45)
 ina219B = INA219(0x41)
 
-#Stores many frames of data
-frame = []
+frame = [] #a list of dictionaries that stores frames of data
+
+#flight variables that will be updated in get frame
+global flightMode = 0
+global squibDeployed = 0
+global altArray = []
+global corrAltArray = []
+for i in range(50):
+	altArray.append(0)
+	corrAltArray.append(0)
+
+#kalman filter variables.  Note that pressure data is already filtered
+k1 = 0.0 #initial value estimation
+k2 = 2.0 #initial error estimation
+k3 = 0.2 #process noise
+k4 = 1.0 #sensor noise
 
 def binToAscii(x):
 	if(len(x)%8!=0):
@@ -103,14 +138,8 @@ FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, -1))
 """Generates frames of data that contain: raw acceleration values,
 magnetometer, gps, and etc. and adds it to the frames array
 """
-global flightMode
-flightMode = 0
-global squibDeployed
-squibDeployed = 0
-global altArray
-altArray = []
 def getFrame():
-	altArray.append(round(weather.altitude(qnh=1020), roundOff))
+	altArray.append(round(weather.altitude(QNH), roundOff))
 	raw_data = { "time" : (time.time()),
                 "flight_mode": flightMode,
                 "squib_deployed": squibDeployed,
@@ -131,30 +160,6 @@ def getFrame():
                 "mag_y": round(motion.magnetometer().y, roundOff),
                 "mag_z": round(motion.magnetometer().z, roundOff)}
 	frame.append(raw_data)
-
- 
-#### ---------- GPS ---------- ####
- 
-# GPS variables
-gpsd = None
- 
-# GPS init
-call(["sudo", "systemctl", "stop", "gpsd.socket"])
-call(["sudo", "systemctl", "disable", "gpsd.socket"])
-call(["sudo", "killall", "gpsd"])
-call(["sudo", "gpsd", "/dev/ttyS0", "-F", "/var/run/gpsd.sock"])
- 
-class GpsPoller(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        global gpsd #bring it in scope
-        gpsd = gps(mode = WATCH_ENABLE) #starting the stream of info
-        self.current_value = None
-        self.running = True #setting the thread running to true
-    def run(self):
-        global gpsd
-        while gpsp.running:
-            gpsd.next()
  
 if __name__ == '__main__':
     gpsp = GpsPoller()
@@ -168,63 +173,54 @@ if __name__ == '__main__':
             time.sleep(0.5)
 
 def sendFrame():
+	getFrame()
+	currentFrame = frame[-1]
+	assembledFrame = frameAssembly(currentFrame)
+	cFrameBin = decToBin(assembledFrame)
+	cFrameEncoded = binToAscii(cFrameBin)
+	ser.write("\x7F\x7F" + cFrameEncoded + "\x00\x00")
+	txfile.write(str(currentFrame))
+	txfile.write("\n")
+	print(str(currentFrame))
+	time.sleep(0.05)
+
+def apogeeCheck():
+	#Check for change in pressure and store in pressureChange
+	if (mode == "flight") and abs(corrAltArray[-1] - corrAltArray[-10] < 5):
+		return 1
+	return 0
+
+
+def landCheck():
+	if (mode == "descent" and (abs(corrAltArray[-1] - corrAltArray[-40]) < 1)):
+		return 1
+	return 0
+#### ---------- Main Loop ---------- ####
+
+while True
 	try:
-		getFrame()
-		currentFrame = frame[-1]
-		assembledFrame = frameAssembly(currentFrame)
-		cFrameBin = decToBin(assembledFrame)
-		cFrameEncoded = binToAscii(cFrameBin)
-		ser.write("\x7F\x7F" + cFrameEncoded + "\x00\x00")
-		txfile.write(str(currentFrame))
-		txfile.write("\n")
-		print(str(currentFrame))
-		time.sleep(0.05)
+		sendFrame()
+		while flightMode == 0:
+			if frame[-1]["current_1"] > 3.0:
+				flightMode = 1
+		while flightMode == 1:
+			if frame[-1]["voltage_2"] > 9.0:
+				flightMode = 2
+		while flightMode == 2:
+			while abs(motion.accelerometer().z) < 5:
+				continue
+			if apogeeCheck() == 1:
+				#trigger squib
+				squibDeployed = 1
+				flightMode = 3
+				mode = "descent"
+		while flightMode = 3:
+			if landCheck() == 1:
+				flightmode = 4
 	except(KeyboardInterrupt):
         	gpsp.running = False
         	gpsp.join()
         	txfile.close()
-        	ser.close()
-
-def apogeeCheck():
-	#Check for change in pressure and store in pressureChange
-	altChange = altArray[-1] - altArray[-2]
-	if altChange < 0.0 :
-		return 1
-	else:
-		return 0
-
-global init_altitude = round(gpsd.fix.altitude, roundOff)
-def landCheck():
-	if abs(round(gpsd.fix.altitude, roundOff) - init_altitude) < 30:
-		return 1
-	else:
-		return 0
-
-#### ---------- Main Loop ---------- ####
-
-global mode
-mode = "pre_one"
-while mode == "pre_one":
-	sendFrame()
-	if frame[-1]["current_1"] > 3.0:
-		mode = "pre_two"
-while mode == "pre_two":
-	sendFrame()
-	if frame[-1]["voltage_2"] > 9.0:
-		flightMode = 1
-		mode = "flight"
-while mode == "flight":
-	sendFrame()
-	if apogeeCheck() == 1:
-		#trigger squib
-		squibDeployed = 1
-		flightmode = 2
-		mode = "descent"
-while mode == "descent":
-	sendFrame()
-	if landCheck() == 1:
-		flightmode = 3
-		mode = "recovery"
-while True:
-	sendFrame()
+        	ser.close():
+		
 #### ---------- End of Main Loop ---------- ####
