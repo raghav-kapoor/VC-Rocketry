@@ -111,8 +111,8 @@ global altArray
 altArray = []
 def getFrame():
 	altArray.append(round(weather.altitude(qnh=1020), roundOff))
-	raw_data = { "time" : (time.time()),
-                "flight_mode": flightMode,
+    	raw_data = { "time" : (time.time()),
+		"flight_mode": flightMode,
                 "squib_deployed": squibDeployed,
                 "a_x": round(motion.accelerometer().x, roundOff),
                 "a_y": round(motion.accelerometer().y, roundOff),
@@ -123,10 +123,10 @@ def getFrame():
                 "current_1": round(ina219A.getCurrent_mA(), roundOff),
                 "volt_b2": round(ina219B.getBusVoltage_V(), roundOff),
                 "current_2": round(ina219B.getCurrent_mA(), roundOff),
-                "gps_lat": round(gpsd.fix.latitude, roundOff),
-                "gps_lon": round(gpsd.fix.longitude, roundOff),
-                "gps_alt": round(gpsd.fix.altitude, roundOff),
-                "gps_spd": round(gpsd.fix.speed, roundOff),
+                "gps_lat": round(37.275869, roundOff),
+                "gps_lon": round(-121.8269507, roundOff),
+                "gps_alt": round(83.5063, roundOff),
+                "gps_spd": round(0.0533, roundOff),
                 "mag_x": round(motion.magnetometer().x, roundOff),
                 "mag_y": round(motion.magnetometer().y, roundOff),
                 "mag_z": round(motion.magnetometer().z, roundOff)}
@@ -136,36 +136,36 @@ def getFrame():
 #### ---------- GPS ---------- ####
  
 # GPS variables
-gpsd = None
- 
-# GPS init
-call(["sudo", "systemctl", "stop", "gpsd.socket"])
-call(["sudo", "systemctl", "disable", "gpsd.socket"])
-call(["sudo", "killall", "gpsd"])
-call(["sudo", "gpsd", "/dev/ttyS0", "-F", "/var/run/gpsd.sock"])
- 
-class GpsPoller(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        global gpsd #bring it in scope
-        gpsd = gps(mode = WATCH_ENABLE) #starting the stream of info
-        self.current_value = None
-        self.running = True #setting the thread running to true
-    def run(self):
-        global gpsd
-        while gpsp.running:
-            gpsd.next()
- 
-if __name__ == '__main__':
-    gpsp = GpsPoller()
-    gpsp.start()
-    while True:
-        if ((gpsd.fix.latitude > 0.0) or (gpsd.fix.latitude < 0.0)) and ((gpsd.fix.altitude > 0.0) or (gpsd.fix.altitude < 0.0)):
-	    	# print("GPS Locked")
-            break
-        else:
-            # print("GPS NOT LOCKED")
-            time.sleep(0.5)
+# gpsd = None
+#  
+# # GPS init
+# call(["sudo", "systemctl", "stop", "gpsd.socket"])
+# call(["sudo", "systemctl", "disable", "gpsd.socket"])
+# call(["sudo", "killall", "gpsd"])
+# call(["sudo", "gpsd", "/dev/ttyS0", "-F", "/var/run/gpsd.sock"])
+# 
+# class GpsPoller(threading.Thread):
+#     def __init__(self):
+#         threading.Thread.__init__(self)
+#         global gpsd #bring it in scope
+#         gpsd = gps(mode = WATCH_ENABLE) #starting the stream of info
+#         self.current_value = None
+#         self.running = True #setting the thread running to true
+#     def run(self):
+#         global gpsd
+#         while gpsp.running:
+#             gpsd.next()
+#  
+# if __name__ == '__main__':
+#     gpsp = GpsPoller()
+#     gpsp.start()
+#     while True:
+#         if ((gpsd.fix.latitude > 0.0) or (gpsd.fix.latitude < 0.0)) and ((gpsd.fix.altitude > 0.0) or (gpsd.fix.altitude < 0.0)):
+# 	    	# print("GPS Locked")
+#             break
+#         else:
+#             # print("GPS NOT LOCKED")
+#             time.sleep(0.5)
 
 def sendFrame():
 	try:
@@ -193,12 +193,12 @@ def apogeeCheck():
 	else:
 		return 0
 
-global init_altitude = round(gpsd.fix.altitude, roundOff)
-def landCheck():
-	if abs(round(gpsd.fix.altitude, roundOff) - init_altitude) < 30:
-		return 1
-	else:
-		return 0
+# global init_altitude = round(gpsd.fix.altitude, roundOff)
+# def landCheck():
+# 	if abs(round(gpsd.fix.altitude, roundOff) - init_altitude) < 30:
+# 		return 1
+# 	else:
+# 		return 0
 
 #### ---------- Main Loop ---------- ####
 
@@ -210,7 +210,7 @@ while mode == "pre_one":
 		mode = "pre_two"
 while mode == "pre_two":
 	sendFrame()
-	if frame[-1]["voltage_2"] > 9.0:
+	if frame[-1]["volt_b2"] > 9.0:
 		flightMode = 1
 		mode = "flight"
 while mode == "flight":
@@ -222,7 +222,7 @@ while mode == "flight":
 		mode = "descent"
 while mode == "descent":
 	sendFrame()
-	if landCheck() == 1:
+	if 1 == 1:
 		flightmode = 3
 		mode = "recovery"
 while True:
