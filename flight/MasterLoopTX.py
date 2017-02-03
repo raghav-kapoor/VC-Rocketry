@@ -56,10 +56,10 @@ for i in range(50):
 	corrAltArray.append(0)
 
 #kalman filter variables.  Note that pressure data is already filtered
-k1 = 0.0 #initial value estimation
-k2 = 2.0 #initial error estimation
-k3 = 0.2 #process noise
-k4 = 1.0 #sensor noise
+global k1 = 0.0 #initial value estimation
+global k2 = 2.0 #initial error estimation
+global k3 = 0.2 #process noise
+global k4 = 1.0 #sensor noise
 
 def binToAscii(x):
 	if(len(x)%8!=0):
@@ -140,6 +140,12 @@ magnetometer, gps, and etc. and adds it to the frames array
 """
 def getFrame():
 	altArray.append(round(weather.altitude(QNH), roundOff))
+	#update filter
+    	k2 += k3
+    	k5 = k2/(k2+k4)
+    	k1 += (k5*(errors[-1]["alt_pres"]-k1))
+    	k2 *= (1-k5)
+	corrAltArray.append(k1)
 	raw_data = { "time" : (time.time()),
                 "flight_mode": flightMode,
                 "squib_deployed": squibDeployed,
@@ -160,17 +166,6 @@ def getFrame():
                 "mag_y": round(motion.magnetometer().y, roundOff),
                 "mag_z": round(motion.magnetometer().z, roundOff)}
 	frame.append(raw_data)
- 
-if __name__ == '__main__':
-    gpsp = GpsPoller()
-    gpsp.start()
-    while True:
-        if ((gpsd.fix.latitude > 0.0) or (gpsd.fix.latitude < 0.0)) and ((gpsd.fix.altitude > 0.0) or (gpsd.fix.altitude < 0.0)):
-	    	# print("GPS Locked")
-            break
-        else:
-            # print("GPS NOT LOCKED")
-            time.sleep(0.5)
 
 def sendFrame():
 	getFrame()
@@ -196,31 +191,40 @@ def landCheck():
 		return 1
 	return 0
 #### ---------- Main Loop ---------- ####
+if __name__ == '__main__':
+    gpsp = GpsPoller()
+    gpsp.start()
+    while True:
+        if ((gpsd.fix.latitude > 0.0) or (gpsd.fix.latitude < 0.0)) and ((gpsd.fix.altitude > 0.0) or (gpsd.fix.altitude < 0.0)):
+	    	# print("GPS Locked")
+            break
+        else:
+            # print("GPS NOT LOCKED")
+            time.sleep(0.5)
+	while True
+		try:
+			sendFrame()
+			while flightMode == 0:
+				if frame[-1]["current_1"] > 3.0:
+					flightMode = 1
+			while flightMode == 1:
+				if frame[-1]["voltage_2"] > 9.0:
+					flightMode = 2
+			while flightMode == 2:
+				while abs(frame[-1]["a_z"]) < 5:
+					continue
+				if apogeeCheck() == 1:
+					#trigger squib
+					squibDeployed = 1
+					flightMode = 3
+					mode = "descent"
+			while flightMode = 3:
+				if landCheck() == 1:
+					flightmode = 4
+		except(KeyboardInterrupt):
+			gpsp.running = False
+			gpsp.join()
+			txfile.close()
+			ser.close():
 
-while True
-	try:
-		sendFrame()
-		while flightMode == 0:
-			if frame[-1]["current_1"] > 3.0:
-				flightMode = 1
-		while flightMode == 1:
-			if frame[-1]["voltage_2"] > 9.0:
-				flightMode = 2
-		while flightMode == 2:
-			while abs(motion.accelerometer().z) < 5:
-				continue
-			if apogeeCheck() == 1:
-				#trigger squib
-				squibDeployed = 1
-				flightMode = 3
-				mode = "descent"
-		while flightMode = 3:
-			if landCheck() == 1:
-				flightmode = 4
-	except(KeyboardInterrupt):
-        	gpsp.running = False
-        	gpsp.join()
-        	txfile.close()
-        	ser.close():
-		
-#### ---------- End of Main Loop ---------- ####
+	#### ---------- End of Main Loop ---------- ####
