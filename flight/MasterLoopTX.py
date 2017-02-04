@@ -43,6 +43,22 @@ roundOff = 3 #2 is confirmed to work
 ina219A = INA219(0x45)
 ina219B = INA219(0x41)
 
+class DataPoint:
+	#name in dictionary
+	name = ""
+	#head digit for positivity
+	hasPositivity = 0
+	#amount of digits including the head
+	length = 0
+	#digits decimal offset count
+	decOffset = 0
+
+	def __init__(self, name, hasPositivity, length, decOffset):
+		self.name = name
+		self.hasPositivity = hasPositivity
+		self.length = length
+		self.decOffset = decOffset
+
 frame = [] #a list of dictionaries that stores frames of data
 FRAME_STRUCT = []
 FRAME_STRUCT.append(DataPoint("time", 0, 13, 0))
@@ -64,8 +80,7 @@ FRAME_STRUCT.append(DataPoint("a_z", 1, 4, 1))
 FRAME_STRUCT.append(DataPoint("mag_x", 1, 4, -1))
 FRAME_STRUCT.append(DataPoint("mag_y", 1, 4, -1))
 FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, -1))
-getFrame()
-QNH = round(frame[-1]["pressure"] / 100,2)
+QNH = round(weather.pressure() / 100,2)
 
 #flight variables that will be updated in get frame
 global flightMode
@@ -89,22 +104,6 @@ global k4
 k4 = 1.0 #sensor noise
 global k5
 k5 = 0.0 #initialize a variable used later
-
-class DataPoint:
-	#name in dictionary
-	name = ""
-	#head digit for positivity
-	hasPositivity = 0
-	#amount of digits including the head
-	length = 0
-	#digits decimal offset count
-	decOffset = 0
-
-	def __init__(self, name, hasPositivity, length, decOffset):
-		self.name = name
-		self.hasPositivity = hasPositivity
-		self.length = length
-		self.decOffset = decOffset
 
 def frameAssembly(testFrame):
 	cAssembly = ""
@@ -213,33 +212,33 @@ if __name__ == '__main__':
         else:
             # print("GPS NOT LOCKED")
             time.sleep(0.5)
-	while True
-		try:
-			while flightMode == 0:
-				sendFrame()
-				if frame[-1]["current_1"] > 3.0:
-					flightMode = 1
-			while flightMode == 1:
-				sendFrame()
-				if frame[-1]["voltage_2"] > 9.0:
-					flightMode = 2
-			launchFlag = False
-			while flightMode == 2:
-				sendFrame()
-				if abs(frame[-1]["a_z"] < 1.5):
-					launchFlag = True
-				if launchFlag and apogeeCheck():
-					#trigger squib
-					squibDeployed = 1
-					flightMode = 3
-					mode = "descent"
-			while flightMode = 3:
-				if landCheck():
-					flightmode = 4
-		except(KeyboardInterrupt):
-			gpsp.running = False
-			gpsp.join()
-			txfile.close()
-			ser.close():
+while True:
+	try:
+		while flightMode == 0:
+			sendFrame()
+			if frame[-1]["current_1"] > 3.0:
+				flightMode = 1
+		while flightMode == 1:
+			sendFrame()
+			if frame[-1]["volt_b2"] > 9.0:
+				flightMode = 2
+		launchFlag = False
+		while flightMode == 2:
+			sendFrame()
+			if abs(frame[-1]["a_z"] < 1.5):
+				launchFlag = True
+			if launchFlag and apogeeCheck():
+				#trigger squib
+				squibDeployed = 1
+				flightMode = 3
+				mode = "descent"
+		while flightMode == 3:
+			if landCheck():
+				flightmode = 4
+	except(KeyboardInterrupt):
+		gpsp.running = False
+		gpsp.join()
+		txfile.close()
+		ser.close():
 
 	#### ---------- End of Main Loop ---------- ####
