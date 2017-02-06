@@ -59,18 +59,14 @@ def frameAssembly(testFrame):
 def frameDisassembly(decAssembly):
 	if (len(decAssembly) != DECSIZE):
 		return "FrameWrongSize\n"
-
 	cFrame = {}
-
-	for dataPoint in FRAME_STRUCT:
-		
+	for dataPoint in FRAME_STRUCT:	
 		if dataPoint.hasPositivity:
 			cFrame[dataPoint.name] = (int(decAssembly[0:1])*-2+1) * int(decAssembly[1:dataPoint.length]) * (float(10**dataPoint.decOffset))
 		else:
 			cFrame[dataPoint.name] = (int(decAssembly[0:dataPoint.length]) * (float(10**dataPoint.decOffset)))
 		
 		decAssembly = decAssembly[dataPoint.length:]
-
 	return cFrame
 
 FRAME_STRUCT = []
@@ -95,7 +91,6 @@ FRAME_STRUCT.append(DataPoint("mag_y", 1, 4, 1))
 FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, 1))
 
 fCount = 0
-start = time.time()
 while True:
 	try:
 	    tempLine = ""
