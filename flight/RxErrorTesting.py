@@ -114,6 +114,6 @@ while True:
 			print(str(disassembledData))
 			fCount += 1
 		    tempLine = ""
-	except (KeyboardInterrupt)
+	except (KeyboardInterrupt):
 		ser.close()
 		rxfile.close()
