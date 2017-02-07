@@ -160,7 +160,7 @@ def getFrame():
 	corrAltArray.append(round(k1, 0))
 	raw_data = {"time" : time.time(), "flight_mode": flightMode, "squib_deployed": squibDeployed}
 	try:
-		raw_data[key] = round(motion.accelerometer().x, roundOff)
+		raw_data["a_x"] = round(motion.accelerometer().x, roundOff)
 	except:
 		raw_data["a_x"] = 0.0
 	try:
@@ -186,7 +186,7 @@ def getFrame():
 	try:
 		raw_data["current_1"] = round(ina219A.getCurrent_mA(), roundOff)
 	except:
-		raw_data["current"] = 0.0
+		raw_data["current_1"] = 0.0
 	try:
 		raw_data["volt_b2"] = round(ina219B.getBusVoltage_V(), roundOff)
 	except:
