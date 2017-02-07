@@ -59,78 +59,56 @@ def frameAssembly(testFrame):
 def frameDisassembly(decAssembly):
 	if (len(decAssembly) != DECSIZE):
 		return "FrameWrongSize\n"
-
 	cFrame = {}
-
-	for dataPoint in FRAME_STRUCT:
-		
+	for dataPoint in FRAME_STRUCT:	
 		if dataPoint.hasPositivity:
 			cFrame[dataPoint.name] = (int(decAssembly[0:1])*-2+1) * int(decAssembly[1:dataPoint.length]) * (float(10**dataPoint.decOffset))
 		else:
 			cFrame[dataPoint.name] = (int(decAssembly[0:dataPoint.length]) * (float(10**dataPoint.decOffset)))
 		
 		decAssembly = decAssembly[dataPoint.length:]
-
 	return cFrame
 
-testFrame = { 
-	"time": time.time(),
-	"flight_mode": 0,
-	"squib_deployed": 0,
-	"temp": 24.1167,
-	"pressure": 100753.5629,
-	"current_1": -519.0,
-	"volt_b1": 3.84,
-	"current_2": -1.0,
-	"volt_b2": 1.024,
-	"gps_lat": 37.275995,
-	"gps_lon": -121.82688,
-	"gps_alt": 143.3,
-	"gps_spd": 1.999,
-	"a_x": 0.0677,
-	"a_y": -0.0447,
-	"a_z": 1.0335,
-	"mag_x": 1395,
-	"mag_y": -2182,
-	"mag_z": -3231 }
-
 FRAME_STRUCT = []
-FRAME_STRUCT.append(DataPoint("time", 0, 13, 0))
+FRAME_STRUCT.append(DataPoint("time", 0, 13, -3))
 FRAME_STRUCT.append(DataPoint("flight_mode", 0, 1, 0))
 FRAME_STRUCT.append(DataPoint("squib_deployed", 0, 1, 0))
-FRAME_STRUCT.append(DataPoint("temp", 0, 4, 1))
-FRAME_STRUCT.append(DataPoint("pressure", 0, 5, -1))
-FRAME_STRUCT.append(DataPoint("current_1", 0, 4, 1))
-FRAME_STRUCT.append(DataPoint("volt_b1", 0, 4, 3))
-FRAME_STRUCT.append(DataPoint("current_2", 0, 4, 1))
-FRAME_STRUCT.append(DataPoint("volt_b2", 0, 4, 3))
-FRAME_STRUCT.append(DataPoint("gps_lat", 1, 10, 6))
-FRAME_STRUCT.append(DataPoint("gps_lon", 1, 10, 6))
-FRAME_STRUCT.append(DataPoint("gps_alt", 0, 5, 1))
-FRAME_STRUCT.append(DataPoint("gps_spd", 0, 4, 1))
-FRAME_STRUCT.append(DataPoint("a_x", 1, 4, 1))
-FRAME_STRUCT.append(DataPoint("a_y", 1, 4, 1))
-FRAME_STRUCT.append(DataPoint("a_z", 1, 4, 1))
-FRAME_STRUCT.append(DataPoint("mag_x", 1, 4, -1))
-FRAME_STRUCT.append(DataPoint("mag_y", 1, 4, -1))
-FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, -1))
+FRAME_STRUCT.append(DataPoint("temp", 0, 4, -1))
+FRAME_STRUCT.append(DataPoint("pressure", 0, 5, 1))
+FRAME_STRUCT.append(DataPoint("current_1", 0, 4, -1))
+FRAME_STRUCT.append(DataPoint("volt_b1", 0, 4, -3))
+FRAME_STRUCT.append(DataPoint("current_2", 0, 4, -1))
+FRAME_STRUCT.append(DataPoint("volt_b2", 0, 4, -3))
+FRAME_STRUCT.append(DataPoint("gps_lat", 1, 10, -6))
+FRAME_STRUCT.append(DataPoint("gps_lon", 1, 10, -6))
+FRAME_STRUCT.append(DataPoint("gps_alt", 0, 5, -1))
+FRAME_STRUCT.append(DataPoint("gps_spd", 0, 4, -1))
+FRAME_STRUCT.append(DataPoint("a_x", 1, 4, -1))
+FRAME_STRUCT.append(DataPoint("a_y", 1, 4, -1))
+FRAME_STRUCT.append(DataPoint("a_z", 1, 4, -1))
+FRAME_STRUCT.append(DataPoint("mag_x", 1, 4, 1))
+FRAME_STRUCT.append(DataPoint("mag_y", 1, 4, 1))
+FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, 1))
 
-num = 0
+fCount = 0
 while True:
-    try:
-        dataLine = ser.read(FRAMESIZE)
-        decodedData = binToDec(asciiToBin(dataLine))
-        disassembledData = frameDisassembly(decodedData)
-        rxfile.write(str(disassembledData))
-        rxfile.write("\n")
-<<<<<<< HEAD
-        print(str(disassembledData))
-=======
-        print(disassembledData)
->>>>>>> 664b6f89f026d459e62a1aecf71ecc1cbbb83bb2
-        num+=1
-    except (KeyboardInterrupt):
-        ser.close()
-        rxfile.close()
-        break
-
+	try:
+	    tempLine = ""
+	    if (ser.read(1) == "\x7F"):
+		if (ser.read(1) == "\x7F"):
+		    tempLine += ser.read(2)
+		    while ((tempLine[-1] != "\x00" or tempLine[-2] != "\x00") and len(tempLine) < (FRAMESIZE + 2)):
+			tempLine+=ser.read(1)
+		    if (tempLine[-1] == "\x00" and tempLine[-2] == "\x00" and len(tempLine) == (FRAMESIZE + 2)):
+			decodedData = binToDec(asciiToBin(tempLine[:-2]))
+			disassembledData = frameDisassembly(decodedData)
+			for key in disassembledData.keys():
+				disassembledData[key] = round(disassembledData[key], 3)
+			rxfile.write(str(disassembledData))
+			rxfile.write("\n")
+			print(str(disassembledData))
+			fCount += 1
+		    tempLine = ""
+	except (KeyboardInterrupt):
+		ser.close()
+		rxfile.close()
