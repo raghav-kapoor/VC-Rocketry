@@ -158,25 +158,71 @@ def getFrame():
     	k1 += (k5*(altArray[-1]-k1))
     	k2 *= (1-k5)
 	corrAltArray.append(round(k1, 0))
-	raw_data = { "time" : (time.time()),
-                "flight_mode": flightMode,
-                "squib_deployed": squibDeployed,
-                "a_x": round(motion.accelerometer().x, roundOff),
-                "a_y": round(motion.accelerometer().y, roundOff),
-                "a_z": round(motion.accelerometer().z, roundOff),
-                "temp": round(weather.temperature(), roundOff),
-                "pressure": round(weather.pressure(), roundOff),
-                "volt_b1": round(ina219A.getBusVoltage_V(), roundOff),
-                "current_1": round(ina219A.getCurrent_mA(), roundOff),
-                "volt_b2": round(ina219B.getBusVoltage_V(), roundOff),
-                "current_2": round(ina219B.getCurrent_mA(), roundOff),
-                "gps_lat": round(gpsd.fix.latitude, roundOff),
-                "gps_lon": round(gpsd.fix.longitude, roundOff),
-                "gps_alt": round(gpsd.fix.altitude, roundOff),
-                "gps_spd": round(gpsd.fix.speed, roundOff),
-                "mag_x": round(motion.magnetometer().x, roundOff),
-                "mag_y": round(motion.magnetometer().y, roundOff),
-                "mag_z": round(motion.magnetometer().z, roundOff)}
+	raw_data = {"time" : time.time(), "flight_mode": flightMode, "squib_deployed": squibDeployed}
+	try:
+		raw_data[key] = round(motion.accelerometer().x, roundOff)
+	except:
+		raw_data["a_x"] = 0.0
+	try:
+		raw_data["a_y"] = round(motion.accelerometer().y, roundOff)
+	except:
+		raw_data["a_y"] = 0.0
+	try:
+		raw_data["a_z"] = round(motion.accelerometer().z, roundOff)
+	except:
+		raw_data["a_z"] = 0.0
+	try:
+		raw_data["temp"] = round(weather.temperature(), roundOff)
+	except:
+		raw_data["temp"] = 0.0
+	try:
+		raw_data["pressure"] = round(weather.pressure(), roundOff)
+	except:
+		raw_data["pressure"] = 0.0
+	try:
+		raw_data["volt_b1"] = round(ina219A.getBusVoltage_V(), roundOff)
+	except:
+		raw_data["volt_b1"] = 0.0
+	try:
+		raw_data["current_1"] = round(ina219A.getCurrent_mA(), roundOff)
+	except:
+		raw_data["current"] = 0.0
+	try:
+		raw_data["volt_b2"] = round(ina219B.getBusVoltage_V(), roundOff)
+	except:
+		raw_data["volt_b2"] = 0.0
+	try:
+		raw_data["current_2"] = round(ina219B.getCurrent_mA(), roundOff)
+	except:
+		raw_data["current_2"] = 0.0
+	try:
+		raw_data["gps_lat"] = round(gpsd.fix.latitude, roundOff)
+	except:
+		raw_data["gps_lat"] = 0.0
+	try:
+		raw_data["gps_lon"] = round(gpsd.fix.longitude, roundOff)
+	except:
+		raw_data["gps_lon"] = 0.0
+	try:
+		raw_data["gps_alt"] = round(gpsd.fix.altitude, roundOff)
+	except:
+		raw_data["gps_alt"] = 0.0
+	try:
+		raw_data["gps_spd"] = round(gpsd.fix.speed, roundOff)
+	except:
+		raw_data["gps_spd"] = 0.0
+	try:
+		raw_data["mag_x"] = round(motion.magnetometer().x, roundOff)
+	except:
+		raw_data["mag_x"] = 0.0
+	try:
+		raw_data["mag_y"] = round(motion.magnetometer().y, roundOff)
+	except:
+		raw_data["mag_y"] = 0.0
+	try:
+		raw_data["mag_z"] = round(motion.magnetometer().z, roundOff)
+	except:
+		raw_data["mag_z"] = 0.0
 	frame.append(raw_data)
 
 def sendFrame():
