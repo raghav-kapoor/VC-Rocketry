@@ -73,27 +73,6 @@ def frameDisassembly(decAssembly):
 
 	return cFrame
 
-testFrame = { 
-	"time": time.time(),
-	"flight_mode": 0,
-	"squib_deployed": 0,
-	"temp": 24.1167,
-	"pressure": 100753.5629,
-	"current_1": -519.0,
-	"volt_b1": 3.84,
-	"current_2": -1.0,
-	"volt_b2": 1.024,
-	"gps_lat": 37.275995,
-	"gps_lon": -121.82688,
-	"gps_alt": 143.3,
-	"gps_spd": 1.999,
-	"a_x": 0.0677,
-	"a_y": -0.0447,
-	"a_z": 1.0335,
-	"mag_x": 1395,
-	"mag_y": -2182,
-	"mag_z": -3231 }
-
 FRAME_STRUCT = []
 FRAME_STRUCT.append(DataPoint("time", 0, 13, -3))
 FRAME_STRUCT.append(DataPoint("flight_mode", 0, 1, 0))
@@ -117,26 +96,24 @@ FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, 1))
 
 fCount = 0
 start = time.time()
-while (start-time.time())<60:
-    tempLine = ""
-    if (ser.read(1) == "\x7F"):
-        if (ser.read(1) == "\x7F"):
-            tempLine += ser.read(2)
-            while ((tempLine[-1] != "\x00" or tempLine[-2] != "\x00") and len(tempLine) < (FRAMESIZE + 2)):
-                tempLine+=ser.read(1)
-            if len(tempLine) > (FRAMESIZE + 2):
-                print("2 NULL NOT DETECTED WITHIN FRAME SIZE")
-            if (tempLine[-1] == "\x00" and tempLine[-2] == "\x00" and len(tempLine) == (FRAMESIZE + 2)):
-                decodedData = binToDec(asciiToBin(tempLine[:-2]))
-                disassembledData = frameDisassembly(decodedData)
-                rxfile.write(str(disassembledData))
-                rxfile.write("\n")
-                print("SUCCESSFUL FRAME RECEPTION")
-                print(str(disassembledData))
-                fCount += 1
-            else:
-                print("FRAME WRONG SIZE")
-            tempLine = ""
-ser.close()
-rxfile.close()
-
+while True:
+	try:
+	    tempLine = ""
+	    if (ser.read(1) == "\x7F"):
+		if (ser.read(1) == "\x7F"):
+		    tempLine += ser.read(2)
+		    while ((tempLine[-1] != "\x00" or tempLine[-2] != "\x00") and len(tempLine) < (FRAMESIZE + 2)):
+			tempLine+=ser.read(1)
+		    if (tempLine[-1] == "\x00" and tempLine[-2] == "\x00" and len(tempLine) == (FRAMESIZE + 2)):
+			decodedData = binToDec(asciiToBin(tempLine[:-2]))
+			disassembledData = frameDisassembly(decodedData)
+			for key in disassembledData.keys():
+				disassembledData[key] = round(disassembledData[key], 3)
+			rxfile.write(str(disassembledData))
+			rxfile.write("\n")
+			print(str(disassembledData))
+			fCount += 1
+		    tempLine = ""
+	except (KeyboardInterrupt):
+		ser.close()
+		rxfile.close()
