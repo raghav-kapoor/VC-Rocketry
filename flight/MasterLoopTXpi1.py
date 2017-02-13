@@ -12,10 +12,10 @@ import serial
 
 #### ---------- GPS ---------- ####
 # GPS init
-call(["sudo", "systemctl", "stop", "gpsd.socket"])
-call(["sudo", "systemctl", "disable", "gpsd.socket"])
+call(["sudo", "systemctl", "stop", "serial-getty@ttyAMA0.service"])
+call(["sudo", "systemctl", "disable", "serial-getty@ttyAMA0.service"])
 call(["sudo", "killall", "gpsd"])
-call(["sudo", "gpsd", "/dev/ttyS0", "-F", "/var/run/gpsd.sock"])
+call(["sudo", "gpsd", "/dev/ttyAMA0", "-F", "/var/run/gpsd.sock"])
 #end GPS init
  
 # GPS variables
