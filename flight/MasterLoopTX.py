@@ -223,6 +223,9 @@ def getFrame():
 		raw_data["mag_z"] = round(motion.magnetometer().z, roundOff)
 	except:
 		raw_data["mag_z"] = 0.0
+	for key in raw_data.keys():
+		if (type(raw_data[key]) is not float) and (type(raw_data[key]) is not int):
+			raw_data[key] = 0.0
 	frame.append(raw_data)
 
 def sendFrame():
