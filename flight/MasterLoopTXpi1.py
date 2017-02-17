@@ -240,12 +240,12 @@ def sendFrame():
 	print(str(currentFrame))
 
 def apogeeCheck():
-	if (mode == 3) and abs(corrAltArray[-1] - corrAltArray[-10] < 5):
+	if (flightMode == 3) and abs(corrAltArray[-1] - corrAltArray[-10] < 5):
 		return True
 	return False
 
 def landCheck():
-	if (mode == 4) and (abs(corrAltArray[-1] - corrAltArray[-40]) < 1):
+	if (flightMode == 4) and (abs(corrAltArray[-1] - corrAltArray[-40]) < 1):
 		return True
 	return False
 
