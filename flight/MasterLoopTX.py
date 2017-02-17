@@ -80,7 +80,10 @@ FRAME_STRUCT.append(DataPoint("a_z", 1, 4, 1))
 FRAME_STRUCT.append(DataPoint("mag_x", 1, 4, -1))
 FRAME_STRUCT.append(DataPoint("mag_y", 1, 4, -1))
 FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, -1))
-QNH = round(weather.pressure() / 100,2)
+try:
+	QNH = round(weather.pressure() / 100,2)
+except:
+	QNH = -1.0
 
 #flight variables that will be updated in get frame
 global flightMode
@@ -146,7 +149,10 @@ def decToBin(x):
 magnetometer, gps, and etc. and adds it to the frames array
 """
 def getFrame():
-	altArray.append(round(weather.altitude(QNH), 1))
+	try:
+		altArray.append(round(weather.altitude(QNH), 1))
+	except:
+		altArray.append(-1.0)
 	#update filter
 	global k1
 	global k2
@@ -265,7 +271,7 @@ while True:
 	try:
 		while flightMode == 0:
 			sendFrame()
-			if frame[-1]["current_1"] > 3.0:
+			if frame[-1]["current_1"] > 3.0 and QNH > 0:
 				flightMode = 1
 		while flightMode == 1:
 			sendFrame()
