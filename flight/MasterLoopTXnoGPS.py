@@ -251,7 +251,7 @@ def landCheck():
 	return False
 
 #### ---------- Main Loop ---------- ####
-if __name__ == '__main__':
+#if __name__ == '__main__':
 #    gpsp = GpsPoller()
 #    gpsp.start()
 #    while True:
