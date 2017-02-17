@@ -280,8 +280,8 @@ while True:
 				#trigger squib
 				squibDeployed = 1
 				flightMode = 3
-				mode = "descent"
 		while flightMode == 3:
+			sendFrame()
 			if landCheck():
 				flightmode = 4
 	except(KeyboardInterrupt):
