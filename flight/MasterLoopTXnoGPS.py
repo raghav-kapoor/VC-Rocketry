@@ -241,12 +241,12 @@ def sendFrame():
 
 def apogeeCheck():
 	#Check for change in pressure and store in pressureChange
-	if (mode == "flight") and abs(corrAltArray[-1] - corrAltArray[-10] < 5):
+	if (flightMode == 3) and abs(corrAltArray[-1] - corrAltArray[-10] < 5):
 		return True
 	return False
 
 def landCheck():
-	if (mode == "descent" and (abs(corrAltArray[-1] - corrAltArray[-40]) < 1)):
+	if (flightMode == 4) and (abs(corrAltArray[-1] - corrAltArray[-40]) < 1):
 		return True
 	return False
 
@@ -271,19 +271,20 @@ while True:
 			sendFrame()
 			if frame[-1]["volt_b2"] > 9.0:
 				flightMode = 2
-		launchFlag = False
 		while flightMode == 2:
 			sendFrame()
 			if abs(frame[-1]["a_z"]) > 1.5:
-				launchFlag = True
-			if launchFlag and apogeeCheck():
+				flightMode = 3
+		while flightMode == 3:
+			sendFrame()
+			if apogeeCheck():
 				#trigger squib
 				squibDeployed = 1
-				flightMode = 3
-    		while flightMode == 3:
+				flightMode = 4
+    		while flightMode == 4:
 			sendFrame()
       			if landCheck():
-				flightmode = 4
+				flightmode = 5
 	except(KeyboardInterrupt):
 #		gpsp.running = False
 #		gpsp.join()
