@@ -276,6 +276,7 @@ while True:
 			if abs(frame[-1]["a_z"]) > 1.5:
 				flightMode = 3
 		while flightMode == 3:
+			sendFrame()
 			if apogeeCheck():
 				#trigger squib
 				squibDeployed = 1
