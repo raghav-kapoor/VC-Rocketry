@@ -19,7 +19,7 @@ import serial
 #end GPS init
  
 # GPS variables
-gpsd = None
+#gpsd = None
  
 #class GpsPoller(threading.Thread):
 #    def __init__(self):
@@ -280,9 +280,9 @@ while True:
 				#trigger squib
 				squibDeployed = 1
 				flightMode = 3
-    while flightMode == 3:
+    		while flightMode == 3:
 			sendFrame()
-      if landCheck():
+      			if landCheck():
 				flightmode = 4
 	except(KeyboardInterrupt):
 #		gpsp.running = False
