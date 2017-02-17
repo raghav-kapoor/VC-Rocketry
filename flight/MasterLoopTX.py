@@ -274,7 +274,7 @@ while True:
 		launchFlag = False
 		while flightMode == 2:
 			sendFrame()
-			if abs(frame[-1]["a_z"] < 1.5):
+			if abs(frame[-1]["a_z"]) > 1.5:
 				launchFlag = True
 			if launchFlag and apogeeCheck():
 				#trigger squib
