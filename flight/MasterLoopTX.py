@@ -240,7 +240,11 @@ def sendFrame():
 	assembledFrame = frameAssembly(currentFrame)
 	cFrameBin = decToBin(assembledFrame)
 	cFrameEncoded = binToAscii(cFrameBin)
-	ser.write("\x7F\x7F" + cFrameEncoded + "\x00\x00")
+	try:
+		ser.write("\x7F\x7F" + cFrameEncoded + "\x00\x00")
+	except:
+		print("RADIO MODULE ERROR")
+		txfile.write("RADIO MODULE ERROR\n")
 	txfile.write(str(currentFrame))
 	txfile.write("\n")
 	print(str(currentFrame))
