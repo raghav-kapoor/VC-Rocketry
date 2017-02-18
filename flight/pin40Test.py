@@ -15,7 +15,7 @@ while True:
 		print("Voltage:  " + str(round(ina219A.getBusVoltage_V(), roundOff)))
 		print("Current:  " + str(round(ina219A.getCurrent_mA(), roundOff)))
 		sleep(1)
-	except (KeyboardInterrupt)
+	except (KeyboardInterrupt):
 		GPIO.output(20, 1)
 		print "on"
 		for i in range(10):
