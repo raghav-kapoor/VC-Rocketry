@@ -278,7 +278,7 @@ while True:
 				flightMode = 1
 		while flightMode == 1:
 			sendFrame()
-			if frame[-1]["volt_b2"] > 9.0:
+			if frame[-1]["volt_b2"] > 8.0:
 				flightMode = 2
 		while flightMode == 2:
 			sendFrame()
