@@ -33,16 +33,24 @@ class GpsPoller(threading.Thread):
         while gpsp.running:
             gpsd.next()
 
-ser = serial.Serial('/dev/ttyUSB0', 9600)
+try:
+	ser = serial.Serial('/dev/ttyUSB0', 9600)
+except:
+	print("RADIO MODULE NOT CONNECTED")
+	sys.exit(1) #1 means the radio module has a problem
 txfile = open("testsend.txt", "w")
 FRAMESIZE = 39
 DECSIZE = 93
 roundOff = 3 #2 is confirmed to work
 
 #Defines I2C address of current sensors
-ina219A = INA219(0x45)
-ina219B = INA219(0x41)
-
+try:
+	ina219A = INA219(0x45)
+	ina219B = INA219(0x41)
+except:
+	print("CURRENT SENSORS NOT CONNECTED")
+	sys.exit(2) #2 means the current/power sensors have a problem
+	
 class DataPoint:
 	#name in dictionary
 	name = ""
@@ -261,15 +269,19 @@ def landCheck():
 
 #### ---------- Main Loop ---------- ####
 if __name__ == '__main__':
-    gpsp = GpsPoller()
-    gpsp.start()
-    while True:
-        if ((gpsd.fix.latitude > 0.0) or (gpsd.fix.latitude < 0.0)) and ((gpsd.fix.altitude > 0.0) or (gpsd.fix.altitude < 0.0)):
-	    print("GPS Locked")
-            break
+    	try:
+		gpsp = GpsPoller()
+    		gpsp.start()
+	except:
+		print("GPS NOT FUNCTIONAL")
+		sys.exit(3) #3 for GPS errors
+    	while True:
+        	if ((gpsd.fix.latitude > 0.0) or (gpsd.fix.latitude < 0.0)) and ((gpsd.fix.altitude > 0.0) or (gpsd.fix.altitude < 0.0)):
+	    	print("GPS Locked")
+            	break
         else:
-            print("GPS NOT LOCKED")
-            time.sleep(0.5)
+            	print("GPS NOT LOCKED")
+            	time.sleep(0.5)
 while True:
 	try:
 		while flightMode == 0:
