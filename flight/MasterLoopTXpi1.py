@@ -1,7 +1,11 @@
 import sys
 import time
 from Subfact_ina219 import INA219
-from envirophat import weather, motion
+try:
+	from envirophat import weather, motion
+except:
+	print("ENVIROPHAT NOT CONNECTED")
+	sys.exit(4) #4 means envirophat not connected
 import gps
 from gps import *
 import threading
