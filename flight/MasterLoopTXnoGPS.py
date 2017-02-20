@@ -33,15 +33,23 @@ import serial
 #        while gpsp.running:
 #            gpsd.next()
 
-ser = serial.Serial('/dev/ttyUSB0', 9600)
+try:
+	ser = serial.Serial('/dev/ttyUSB0', 9600)
+except:
+	print("RADIO MODULE NOT CONNECTED")
+	sys.exit(1) #1 means the radio module has a problem
 txfile = open("testsend.txt", "w")
 FRAMESIZE = 39
 DECSIZE = 93
 roundOff = 3 #2 is confirmed to work
 
 #Defines I2C address of current sensors
-ina219A = INA219(0x45)
-ina219B = INA219(0x41)
+try:
+	ina219A = INA219(0x45)
+	ina219B = INA219(0x41)
+except:
+	print("CURRENT SENSORS NOT CONNECTED")
+	sys.exit(2) #2 means the current/power sensors have a problem
 
 class DataPoint:
 	#name in dictionary
