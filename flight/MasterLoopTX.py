@@ -49,8 +49,8 @@ roundOff = 3 #2 is confirmed to work
 
 #GPIO INFO FOR PYROS
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(20, GPIO.OUT)
-GPIO.output(20, 0)
+GPIO.setup(21, GPIO.OUT)
+GPIO.output(21, 0)
 
 #Defines I2C address of current sensors
 try:
@@ -296,11 +296,11 @@ while True:
 	try:
 		while flightMode == 0:
 			sendFrame()
-			if frame[-1]["current_1"] > 3.0 and QNH > 0:
+			if frame[-1]["current_2"] > 3.0 and QNH > 0:
 				flightMode = 1
 		while flightMode == 1:
 			sendFrame()
-			if frame[-1]["volt_b2"] > 8.0:
+			if frame[-1]["volt_b1"] > 8.0:
 				flightMode = 2
 		while flightMode == 2:
 			sendFrame()
@@ -312,7 +312,7 @@ while True:
 				#trigger squib
 				squibDeployed = 1
 				#trigger pyros
-				GPIO.output(20, 1)
+				GPIO.output(21, 1)
 				GPIO.cleanup()
 				flightMode = 4
 		while flightMode == 4:
