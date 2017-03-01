@@ -47,6 +47,11 @@ FRAMESIZE = 39
 DECSIZE = 93
 roundOff = 3 #2 is confirmed to work
 
+#GPIO INFO FOR PYROS
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(20, GPIO.OUT)
+GPIO.output(20, 0)
+
 #Defines I2C address of current sensors
 try:
 	ina219A = INA219(0x45)
@@ -305,6 +310,9 @@ while True:
 			if apogeeCheck():
 				#trigger squib
 				squibDeployed = 1
+				#trigger pyros
+				GPIO.output(20, 1)
+				GPIO.cleanup()
 				flightMode = 4
 		while flightMode == 4:
 			sendFrame()
