@@ -317,7 +317,9 @@ while True:
 		while flightMode == 4:
 			sendFrame()
 			if landCheck():
-				flightmode = 5
+				flightMode = 5
+		while flightMode == 5:
+			sendFrame()
 	except(KeyboardInterrupt):
 		gpsp.running = False
 		gpsp.join()
