@@ -286,11 +286,11 @@ if __name__ == '__main__':
 		sys.exit(3) #3 for GPS errors
     	while True:
         	if ((gpsd.fix.latitude > 0.0) or (gpsd.fix.latitude < 0.0)) and ((gpsd.fix.altitude > 0.0) or (gpsd.fix.altitude < 0.0)):
-	    	print("GPS Locked")
-            	break
-        else:
-            	print("GPS NOT LOCKED")
-            	time.sleep(0.5)
+	    		print("GPS Locked")
+            		break
+        	else:
+            		print("GPS NOT LOCKED")
+            		time.sleep(0.5)
 while True:
 	try:
 		while flightMode == 0:
