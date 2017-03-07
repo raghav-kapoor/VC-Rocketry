@@ -49,8 +49,8 @@ roundOff = 3 #2 is confirmed to work
 
 #GPIO INFO FOR PYROS
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(21, GPIO.OUT)
-GPIO.output(21, 0)
+GPIO.setup(20, GPIO.OUT)
+GPIO.output(20, 0)
 
 #Defines I2C address of current sensors
 try:
@@ -265,8 +265,12 @@ def sendFrame():
 	txfile.write(str(currentFrame))
 	txfile.write("\n")
 	print(str(currentFrame))
+	time.sleep(0.04)
 
 def apogeeCheck():
+	for i in range(10):
+		if corrAltArray[-1*i] == 0:
+			return False
 	if (flightMode == 3) and abs(corrAltArray[-1] - corrAltArray[-10] < 5):
 		return True
 	return False
@@ -275,6 +279,49 @@ def landCheck():
 	if (flightMode == 4) and (abs(corrAltArray[-1] - corrAltArray[-40]) < 1):
 		return True
 	return False
+
+def sensorCheck():
+	if QNH > 0 and gpsd.fix.altitude != 0.0:
+		return True
+	else:
+		sys.exit(4) #4 for problems with final sensor check
+
+def flightOperation(mode):
+	global flightMode
+	if mode == 0:
+		if frame[-1]["current_2"] > 3.0:
+			flightMode = 1
+			return
+	if mode == 1:
+		if frame[-1]["current_2"] < 3.0:
+			flightMode = 0
+			return
+		if frame[-1]["volt_b1"] > 8.0:
+			flightMode = 2
+			return
+	if mode == 2:
+		if frame[-1]["current_2"] < 3.0 or frame[-1]["volt_b1"] < 8.0:
+			flightMode = 0
+			return
+		if abs(frame[-1]["a_z"]) > 3.5:
+			flightMode = 3
+			return
+	if mode == 3:
+		if apogeeCheck():
+			#trigger squib
+			squibDeployed = 1
+			#trigger pyros
+			GPIO.output(20, 1)
+			GPIO.cleanup()
+			flightMode = 4
+			return
+	if mode == 4:
+		if landCheck():
+			flightMode = 5
+			return
+	if mode == 5:
+		return
+	return
 
 #### ---------- Main Loop ---------- ####
 if __name__ == '__main__':
@@ -291,35 +338,41 @@ if __name__ == '__main__':
         	else:
             		print("GPS NOT LOCKED")
             		time.sleep(0.5)
+			
+###OLD MAIN CONTROL LOOP
+#		while flightMode == 0:
+#			sendFrame()
+#			if frame[-1]["current_2"] > 3.0 and QNH > 0:
+#				flightMode = 1
+#		while flightMode == 1:
+#			sendFrame()
+#			if frame[-1]["volt_b1"] > 8.0:
+#				flightMode = 2
+#		while flightMode == 2:
+#			sendFrame()
+#			if abs(frame[-1]["a_z"]) > 1.5:
+#				flightMode = 3
+#		while flightMode == 3:
+#			sendFrame()
+#			if apogeeCheck():
+#				#trigger squib
+#				squibDeployed = 1
+#				#trigger pyros
+#				GPIO.output(21, 1)
+#				GPIO.cleanup()
+#				flightMode = 4
+#		while flightMode == 4:
+#			sendFrame()
+#			if landCheck():
+#				flightMode = 5
+#		while flightMode == 5:
+#			sendFrame()
+
+###NEW MAIN CONTROL FUNCTIONALITY
 while True:
 	try:
-		while flightMode == 0:
-			sendFrame()
-			if frame[-1]["current_2"] > 3.0 and QNH > 0:
-				flightMode = 1
-		while flightMode == 1:
-			sendFrame()
-			if frame[-1]["volt_b1"] > 8.0:
-				flightMode = 2
-		while flightMode == 2:
-			sendFrame()
-			if abs(frame[-1]["a_z"]) > 1.5:
-				flightMode = 3
-		while flightMode == 3:
-			sendFrame()
-			if apogeeCheck():
-				#trigger squib
-				squibDeployed = 1
-				#trigger pyros
-				GPIO.output(21, 1)
-				GPIO.cleanup()
-				flightMode = 4
-		while flightMode == 4:
-			sendFrame()
-			if landCheck():
-				flightMode = 5
-		while flightMode == 5:
-			sendFrame()
+		sendFrame()
+		flightOperation(flightMode)
 	except(KeyboardInterrupt):
 		gpsp.running = False
 		gpsp.join()
