@@ -107,6 +107,10 @@ global flightMode
 flightMode = 0
 global squibDeployed
 squibDeployed = 0
+global SQUIBDELAY
+SQUIBDELAY = 10 #seconds
+global delayStart
+delayStart = 0
 altArray = []
 corrAltArray = []
 for i in range(50):
@@ -284,42 +288,50 @@ def sensorCheck():
 	if QNH > 0 and gpsd.fix.altitude != 0.0:
 		return True
 	else:
-		sys.exit(4) #4 for problems with final sensor check
+		sys.exit(5) #5 for problems with final sensor check
 
 def flightOperation(mode):
 	global flightMode
+	global squibDeployed
+	global delayStart
+	global SQUIBDELAY
 	if mode == 0:
 		if frame[-1]["current_2"] > 3.0:
 			flightMode = 1
-			return
+		return
 	if mode == 1:
 		if frame[-1]["current_2"] < 3.0:
 			flightMode = 0
 			return
 		if frame[-1]["volt_b1"] > 8.0:
 			flightMode = 2
-			return
+		return
 	if mode == 2:
 		if frame[-1]["current_2"] < 3.0 or frame[-1]["volt_b1"] < 8.0:
 			flightMode = 0
 			return
 		if abs(frame[-1]["a_z"]) > 3.5:
 			flightMode = 3
-			return
+		return
 	if mode == 3:
 		if apogeeCheck():
+			flightMode = 4
+			delayStart = time.time()
+		return
+	if mode == 4:
+		if frame[-1]["time"] - delayStart > SQUIBDELAY:
+			flightMode = 5
 			#trigger squib
 			squibDeployed = 1
 			#trigger pyros
 			GPIO.output(20, 1)
 			GPIO.cleanup()
-			flightMode = 4
-			return
-	if mode == 4:
-		if landCheck():
-			flightMode = 5
-			return
+		return
 	if mode == 5:
+		if landCheck():
+			flightMode = 6
+		return
+	if mode == 6:
 		return
 	return
 
