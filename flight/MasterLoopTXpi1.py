@@ -47,11 +47,6 @@ FRAMESIZE = 39
 DECSIZE = 93
 roundOff = 3 #2 is confirmed to work
 
-#GPIO INFO FOR PYROS
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(20, GPIO.OUT)
-GPIO.output(20, 0)
-
 #Defines I2C address of current sensors
 try:
 	ina219A = INA219(0x45)
@@ -59,6 +54,11 @@ try:
 except:
 	print("CURRENT SENSORS NOT CONNECTED")
 	sys.exit(2) #2 means the current/power sensors have a problem
+	
+#GPIO INFO FOR PYROS
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(20, GPIO.OUT)
+GPIO.output(20, 0)
 	
 class DataPoint:
 	#name in dictionary
@@ -97,6 +97,8 @@ FRAME_STRUCT.append(DataPoint("a_z", 1, 4, 1))
 FRAME_STRUCT.append(DataPoint("mag_x", 1, 4, -1))
 FRAME_STRUCT.append(DataPoint("mag_y", 1, 4, -1))
 FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, -1))
+
+#QNH used for setting altitude
 try:
 	QNH = round(weather.pressure() / 100,2)
 except:
