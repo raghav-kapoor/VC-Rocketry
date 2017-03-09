@@ -122,6 +122,8 @@ global ground
 ground = True #read from file
 global apogeeReached
 apogeeReached = False #read from file
+global passedCutoff #1000 m
+passedCutoff = False #read from file
 altArray = []
 corrAltArray = []
 for i in range(2): #so that index errors don't occur
@@ -134,6 +136,7 @@ if ground:
 		QNH = round(weather.pressure() / 100,2)
 	except:
 		QNH = -1.0
+	#write it
 else:
 	#read QNH from file
 	continue
@@ -323,33 +326,44 @@ def flightOperation(mode):
 	if mode == 0:
 		if frame[-1]["current_2"] > 3.0:
 			flightMode = 1
+			#write it
 		return
 	if mode == 1:
 		if frame[-1]["current_2"] < 3.0:
 			flightMode = 0
+			#write it
 			return
 		if frame[-1]["volt_b1"] > 8.0:
 			flightMode = 2
+			#write it
 		return
 	if mode == 2:
 		if frame[-1]["current_2"] < 3.0 or frame[-1]["volt_b1"] < 8.0:
 			flightMode = 0
+			#write it
 			return
 		if abs(frame[-1]["a_z"]) > 3.5:
 			ground = False
+			#write it
 			flightMode = 3
+			#write it
 		return
 	if mode == 3:
 		if apogeeCheck():
 			apogeeReached = True
+			#write it
 			flightMode = 4
+			#write it
 			delayStart = time.time()
+			#write it
 		return
 	if mode == 4:
 		if frame[-1]["time"] - delayStart > SQUIBDELAY:
 			flightMode = 5
+			#write it
 			#trigger squib
 			squibDeployed = 1
+			#write it
 			#trigger pyros
 			GPIO.output(20, 1)
 			GPIO.cleanup()
@@ -357,7 +371,9 @@ def flightOperation(mode):
 	if mode == 5:
 		if landCheck():
 			ground = True
+			#write it
 			flightMode = 6
+			#write it
 		return
 	if mode == 6:
 		return
@@ -422,6 +438,18 @@ while True:
 	try:
 		sendFrame()
 		flightOperation(flightMode)
+		#check for emergency chute deployment, in case something goes wrong, independent of flightmode
+		if frame[-10]["altP"] > 1000:
+			passedCutoff = True
+			#write it
+		if passedCutoff and frame[-1]["altP"] < 1000 and squibDeployed == 0:
+			squibDeployed = 1
+			#write it
+			flightMode = 5
+			#write it
+			GPIO.output(20,1)
+			GPIO.cleanup()		
+			
 	except(KeyboardInterrupt):
 		gpsp.running = False
 		gpsp.join()
