@@ -368,17 +368,20 @@ def whereAmI():
 	global squibDeployed
 	global apogeeReached
 	if ground and frame[-1]["current_2"] < 3.0:
-		return 1
+		return 0
 	if ground and frame[-1]["volt_b1"] < 8.0 and squibDeployed == 0:
+		return 1
+	if ground and not apogeeReached:
 		return 2
-	if !ground and !apogeeReached:
+	if not ground and not apogeeReached:
 		return 3
-	if !ground and apogeeReached and squibDeployed == 0:
+	if not ground and apogeeReached and squibDeployed == 0:
 		return 4
-	if !ground and apogeeReached and squibDeployed == 1:
+	if not ground and apogeeReached and squibDeployed == 1:
 		return 5
 	if ground and apogeeReached and squibDeployed == 1:
 		return 6
+	return 0
 		
 
 #### ---------- Main Loop ---------- ####			
