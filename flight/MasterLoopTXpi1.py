@@ -10,6 +10,7 @@ import gps
 from gps import *
 import threading
 import os
+import io
 from subprocess import call
 import RPi.GPIO as GPIO
 import serial
@@ -52,7 +53,7 @@ try:
 except:
 	print("RADIO MODULE NOT CONNECTED")
 	sys.exit(1) #1 means the radio module has a problem
-txfile = open(str(time.time()), "a+")
+txfile = open(str(time.time()), "w")
 
 #Defines I2C address of current sensors
 try:
@@ -119,11 +120,11 @@ SQUIBDELAY = 10 #seconds #read from file
 global delayStart
 delayStart = 0 #read from file
 global ground
-ground = True #read from file
+ground = 1 #read from file
 global apogeeReached
-apogeeReached = False #read from file
+apogeeReached = 0 #read from file
 global passedCutoff #1000 m
-passedCutoff = False #read from file
+passedCutoff = 0 #read from file
 altArray = []
 corrAltArray = []
 for i in range(2): #so that index errors don't occur
@@ -131,7 +132,7 @@ for i in range(2): #so that index errors don't occur
 	corrAltArray.append(0)
 
 #QNH used for setting altitude
-if ground:
+if ground == 1:
 	try:
 		QNH = round(weather.pressure() / 100,2)
 	except:
@@ -299,7 +300,7 @@ def sendFrame():
 
 def apogeeCheck():
 	for i in range(10):
-		if frame[-1*i]["altP"] == 0:
+		if frame[-1*i]["altP"] <= 0:
 			return False
 	if (flightMode == 3) and abs(frame[-1]["altP"] - frame[-10]["altP"] < 5):
 		return True
@@ -343,14 +344,14 @@ def flightOperation(mode):
 			#write it
 			return
 		if abs(frame[-1]["a_z"]) > 3.5:
-			ground = False
+			ground = 0
 			#write it
 			flightMode = 3
 			#write it
 		return
 	if mode == 3:
 		if apogeeCheck():
-			apogeeReached = True
+			apogeeReached = 1
 			#write it
 			flightMode = 4
 			#write it
@@ -383,19 +384,19 @@ def whereAmI():
 	global ground
 	global squibDeployed
 	global apogeeReached
-	if ground and frame[-1]["current_2"] < 3.0:
+	if ground == 1 and frame[-1]["current_2"] < 3.0:
 		return 0
-	if ground and frame[-1]["volt_b1"] < 8.0 and squibDeployed == 0:
+	if ground == 1 and frame[-1]["volt_b1"] < 8.0 and squibDeployed == 0:
 		return 1
-	if ground and not apogeeReached:
+	if ground == 1 and apogeeReached == 0:
 		return 2
-	if not ground and not apogeeReached:
+	if ground == 0 and apogeeReached == 0:
 		return 3
-	if not ground and apogeeReached and squibDeployed == 0:
+	if ground == 0 and apogeeReached == 1 and squibDeployed == 0:
 		return 4
-	if not ground and apogeeReached and squibDeployed == 1:
+	if ground == 0 and apogeeReached == 1 and squibDeployed == 1:
 		return 5
-	if ground and apogeeReached and squibDeployed == 1:
+	if ground == 1 and apogeeReached == 1 and squibDeployed == 1:
 		return 6
 	return 0
 		
@@ -440,9 +441,9 @@ while True:
 		flightOperation(flightMode)
 		#check for emergency chute deployment, in case something goes wrong, independent of flightmode
 		if frame[-10]["altP"] > 1000:
-			passedCutoff = True
+			passedCutoff = 1
 			#write it
-		if passedCutoff and frame[-1]["altP"] < 1000 and squibDeployed == 0:
+		if passedCutoff == 1 and frame[-1]["altP"] < 1000 and squibDeployed == 0:
 			squibDeployed = 1
 			#write it
 			flightMode = 5
