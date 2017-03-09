@@ -15,16 +15,16 @@ import RPi.GPIO as GPIO
 import serial
 
 #### ---------- GPS ---------- ####
-# GPS init
+# GPS TERMINAL CLEARS
 call(["sudo", "systemctl", "stop", "serial-getty@ttyAMA0.service"])
 call(["sudo", "systemctl", "disable", "serial-getty@ttyAMA0.service"])
 call(["sudo", "killall", "gpsd"])
 call(["sudo", "gpsd", "/dev/ttyAMA0", "-F", "/var/run/gpsd.sock"])
-#end GPS init
- 
+
 # GPS variables
 gpsd = None
- 
+
+#GPS THREADING
 class GpsPoller(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -37,15 +37,22 @@ class GpsPoller(threading.Thread):
         while gpsp.running:
             gpsd.next()
 
+#GPS STARTUP
+try:
+	gpsp = GpsPoller()
+	gpsp.start()
+except:
+	print("GPS NOT FUNCTIONAL")
+	sys.exit(3) #3 for GPS errors
+
+###END GPS INITIALIZATION
+
 try:
 	ser = serial.Serial('/dev/ttyUSB0', 9600)
 except:
 	print("RADIO MODULE NOT CONNECTED")
 	sys.exit(1) #1 means the radio module has a problem
-txfile = open("testsend.txt", "w")
-FRAMESIZE = 39
-DECSIZE = 93
-roundOff = 3 #2 is confirmed to work
+txfile = open(str(time.time()), "a+")
 
 #Defines I2C address of current sensors
 try:
@@ -59,7 +66,8 @@ except:
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(20, GPIO.OUT)
 GPIO.output(20, 0)
-	
+
+#DATAPOINT CLASS FOR FRAME
 class DataPoint:
 	#name in dictionary
 	name = ""
@@ -98,28 +106,40 @@ FRAME_STRUCT.append(DataPoint("mag_x", 1, 4, -1))
 FRAME_STRUCT.append(DataPoint("mag_y", 1, 4, -1))
 FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, -1))
 
-#QNH used for setting altitude
-try:
-	QNH = round(weather.pressure() / 100,2)
-except:
-	QNH = -1.0
-	
+FRAMESIZE = 39 #read from file
+DECSIZE = 93 #read from file
+roundOff = 3 #read from file
 #flight variables that will be updated in get frame
 global flightMode
-flightMode = 0
+flightMode = 0 #read from file
 global squibDeployed
-squibDeployed = 0
+squibDeployed = 0 #read from file
 global SQUIBDELAY
-SQUIBDELAY = 10 #seconds
+SQUIBDELAY = 10 #seconds #read from file
 global delayStart
-delayStart = 0
+delayStart = 0 #read from file
+global ground
+ground = True #read from file
+global apogeeReached
+apogeeReached = False #read from file
 altArray = []
 corrAltArray = []
-for i in range(50):
+for i in range(2): #so that index errors don't occur
 	altArray.append(0)
 	corrAltArray.append(0)
 
-#kalman filter variables.  Note that pressure data is already filtered
+#QNH used for setting altitude
+if ground:
+	try:
+		QNH = round(weather.pressure() / 100,2)
+	except:
+		QNH = -1.0
+else:
+	#read QNH from file
+	continue
+
+#kalman filter variables.  Note that pressure data is already filtered, this is extra on top of it
+#read these from file
 global k1
 k1 = 0.0 #initial value estimation
 global k2
@@ -252,6 +272,7 @@ def getFrame():
 		raw_data["mag_z"] = round(motion.magnetometer().z, roundOff)
 	except:
 		raw_data["mag_z"] = 0.0
+	raw_data["altP"] = corrAltArray[-1]
 	for key in raw_data.keys():
 		if (type(raw_data[key]) is not float) and (type(raw_data[key]) is not int):
 			raw_data[key] = 0.0
@@ -275,14 +296,14 @@ def sendFrame():
 
 def apogeeCheck():
 	for i in range(10):
-		if corrAltArray[-1*i] == 0:
+		if frame[-1*i]["altP"] == 0:
 			return False
-	if (flightMode == 3) and abs(corrAltArray[-1] - corrAltArray[-10] < 5):
+	if (flightMode == 3) and abs(frame[-1]["altP"] - frame[-10]["altP"] < 5):
 		return True
 	return False
 
 def landCheck():
-	if (flightMode == 4) and (abs(corrAltArray[-1] - corrAltArray[-40]) < 1):
+	if (flightMode == 4) and (abs(frame[-1]["altP"] - frame[-40]["altP"]) < 1):
 		return True
 	return False
 
@@ -297,6 +318,8 @@ def flightOperation(mode):
 	global squibDeployed
 	global delayStart
 	global SQUIBDELAY
+	global ground
+	global apogeeReached
 	if mode == 0:
 		if frame[-1]["current_2"] > 3.0:
 			flightMode = 1
@@ -313,10 +336,12 @@ def flightOperation(mode):
 			flightMode = 0
 			return
 		if abs(frame[-1]["a_z"]) > 3.5:
+			ground = False
 			flightMode = 3
 		return
 	if mode == 3:
 		if apogeeCheck():
+			apogeeReached = True
 			flightMode = 4
 			delayStart = time.time()
 		return
@@ -331,28 +356,32 @@ def flightOperation(mode):
 		return
 	if mode == 5:
 		if landCheck():
+			ground = True
 			flightMode = 6
 		return
 	if mode == 6:
 		return
 	return
 
-#### ---------- Main Loop ---------- ####
-if __name__ == '__main__':
-    	try:
-		gpsp = GpsPoller()
-    		gpsp.start()
-	except:
-		print("GPS NOT FUNCTIONAL")
-		sys.exit(3) #3 for GPS errors
-    	while True:
-        	if ((gpsd.fix.latitude > 0.0) or (gpsd.fix.latitude < 0.0)) and ((gpsd.fix.altitude > 0.0) or (gpsd.fix.altitude < 0.0)):
-	    		print("GPS Locked")
-            		break
-        	else:
-            		print("GPS NOT LOCKED")
-            		time.sleep(0.5)
-			
+def whereAmI():
+	global ground
+	global squibDeployed
+	global apogeeReached
+	if ground and frame[-1]["current_2"] < 3.0:
+		return 1
+	if ground and frame[-1]["volt_b1"] < 8.0 and squibDeployed == 0:
+		return 2
+	if !ground and !apogeeReached:
+		return 3
+	if !ground and apogeeReached and squibDeployed == 0:
+		return 4
+	if !ground and apogeeReached and squibDeployed == 1:
+		return 5
+	if ground and apogeeReached and squibDeployed == 1:
+		return 6
+		
+
+#### ---------- Main Loop ---------- ####			
 ###OLD MAIN CONTROL LOOP
 #		while flightMode == 0:
 #			sendFrame()
@@ -383,6 +412,9 @@ if __name__ == '__main__':
 #			sendFrame()
 
 ###NEW MAIN CONTROL FUNCTIONALITY
+sendFrame()
+sendFrame()
+flightMode = whereAmI()
 while True:
 	try:
 		sendFrame()
