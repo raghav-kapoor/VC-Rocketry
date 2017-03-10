@@ -227,54 +227,53 @@ def flightOperation(mode):
 	if mode == 0:
 		if frame[-1]["current_2"] > 3.0:
 			flightMode = 1
-			#write it
+			configWrite("flightMode", flightMode)
 		return
 	if mode == 1:
 		if frame[-1]["current_2"] < 3.0:
 			flightMode = 0
-			#write it
+			configWrite("flightMode", flightMode)
 			return
 		if frame[-1]["volt_b1"] > 8.0:
 			flightMode = 2
-			#write it
+			configWrite("flightMode", flightMode)
 		return
 	if mode == 2:
 		if frame[-1]["current_2"] < 3.0 or frame[-1]["volt_b1"] < 8.0:
 			flightMode = 0
-			#write it
+			configWrite("flightMode", flightMode)
 			return
 		if abs(frame[-1]["a_z"]) > 3.5:
-			ground = 0
-			#write it
 			flightMode = 3
-			#write it
+			ground = 0
+			configWrite("flightMode", flightMode)
+			configWrite("ground", ground)
 		return
 	if mode == 3:
 		if apogeeCheck():
 			apogeeReached = 1
-			#write it
 			flightMode = 4
-			#write it
 			delayStart = time.time()
-			#write it
+			configWrite("flightMode", flightMode)
+			configWrite("apogeeReached", apogeeReached)
+			configWrite("delayStart", delayStart)
 		return
 	if mode == 4:
 		if frame[-1]["time"] - delayStart > SQUIBDELAY:
 			flightMode = 5
-			#write it
-			#trigger squib
 			squibDeployed = 1
-			#write it
+			configWrite("flightMode", flightMode)
+			configWrite("squibDeployed", squibDeployed)
 			#trigger pyros
 			GPIO.output(20, 1)
 			GPIO.cleanup()
 		return
 	if mode == 5:
 		if landCheck():
-			ground = True
-			#write it
 			flightMode = 6
-			#write it
+			ground = 1
+			configWrite("flightMode", flightMode)
+			configWrite("ground", ground)
 		return
 	if mode == 6:
 		return
@@ -501,7 +500,7 @@ FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, -1))
 
 #define file path to read from config file
 global path
-path = masterconfig.txt #USE ABSOLUTE PATH WHEN KNOWN
+path = "masterconfig.txt" #USE ABSOLUTE PATH WHEN KNOWN
 
 #read values from config file
 FRAMESIZE = configRead("FRAMESIZE")
@@ -534,7 +533,7 @@ if ground == 1:
 		QNH = round(weather.pressure() / 100,2)
 	except:
 		QNH = -1.0
-	configWrite("QNH")
+	configWrite("QNH", QNH)
 else:
 	QNH = configRead("QNH")
 
@@ -556,7 +555,7 @@ sendFrame()
 sendFrame()
 #locate self in code
 flightMode = whereAmI()
-#write it
+configWrite("flightMode", flightMode)
 while True:
 	try:
 		sendFrame()
@@ -565,12 +564,12 @@ while True:
 		if len(frame) > 10:
 			if frame[-10]["altP"] > 1000:
 				passedCutoff = 1
-				#write it
+				configWrite("passedCutoff", passedCutoff")
 		if passedCutoff == 1 and frame[-1]["altP"] < 1000 and squibDeployed == 0:
 			squibDeployed = 1
-			#write it
 			flightMode = 5
-			#write it
+			configWrite("squibDeployed", squibDeployed)
+			configWrite("flightMode", flightMode)
 			GPIO.output(20,1)
 			GPIO.cleanup()		
 			
