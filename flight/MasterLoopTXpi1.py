@@ -38,36 +38,6 @@ class GpsPoller(threading.Thread):
         while gpsp.running:
             gpsd.next()
 
-#GPS STARTUP
-try:
-	gpsp = GpsPoller()
-	gpsp.start()
-except:
-	print("GPS NOT FUNCTIONAL")
-	sys.exit(3) #3 for GPS errors
-
-###END GPS INITIALIZATION
-
-try:
-	ser = serial.Serial('/dev/ttyUSB0', 9600)
-except:
-	print("RADIO MODULE NOT CONNECTED")
-	sys.exit(1) #1 means the radio module has a problem
-txfile = open(str(time.time()), "w")
-
-#Defines I2C address of current sensors
-try:
-	ina219A = INA219(0x45)
-	ina219B = INA219(0x41)
-except:
-	print("CURRENT SENSORS NOT CONNECTED")
-	sys.exit(2) #2 means the current/power sensors have a problem
-	
-#GPIO INFO FOR PYROS
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(20, GPIO.OUT)
-GPIO.output(20, 0)
-
 #DATAPOINT CLASS FOR FRAME
 class DataPoint:
 	#name in dictionary
@@ -84,76 +54,6 @@ class DataPoint:
 		self.hasPositivity = hasPositivity
 		self.length = length
 		self.decOffset = decOffset
-
-frame = [] #a list of dictionaries that stores frames of data
-FRAME_STRUCT = []
-FRAME_STRUCT.append(DataPoint("time", 0, 13, 0))
-FRAME_STRUCT.append(DataPoint("flight_mode", 0, 1, 0))
-FRAME_STRUCT.append(DataPoint("squib_deployed", 0, 1, 0))
-FRAME_STRUCT.append(DataPoint("temp", 0, 4, 1))
-FRAME_STRUCT.append(DataPoint("pressure", 0, 5, -1))
-FRAME_STRUCT.append(DataPoint("current_1", 0, 4, 1))
-FRAME_STRUCT.append(DataPoint("volt_b1", 0, 4, 3))
-FRAME_STRUCT.append(DataPoint("current_2", 0, 4, 1))
-FRAME_STRUCT.append(DataPoint("volt_b2", 0, 4, 3))
-FRAME_STRUCT.append(DataPoint("gps_lat", 1, 10, 6))
-FRAME_STRUCT.append(DataPoint("gps_lon", 1, 10, 6))
-FRAME_STRUCT.append(DataPoint("gps_alt", 0, 5, 1))
-FRAME_STRUCT.append(DataPoint("gps_spd", 0, 4, 1))
-FRAME_STRUCT.append(DataPoint("a_x", 1, 4, 1))
-FRAME_STRUCT.append(DataPoint("a_y", 1, 4, 1))
-FRAME_STRUCT.append(DataPoint("a_z", 1, 4, 1))
-FRAME_STRUCT.append(DataPoint("mag_x", 1, 4, -1))
-FRAME_STRUCT.append(DataPoint("mag_y", 1, 4, -1))
-FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, -1))
-
-FRAMESIZE = 39 #read from file
-DECSIZE = 93 #read from file
-roundOff = 3 #read from file
-#flight variables that will be updated in get frame
-global flightMode
-flightMode = 0 #read from file
-global squibDeployed
-squibDeployed = 0 #read from file
-global SQUIBDELAY
-SQUIBDELAY = 10 #seconds #read from file
-global delayStart
-delayStart = 0 #read from file
-global ground
-ground = 1 #read from file
-global apogeeReached
-apogeeReached = 0 #read from file
-global passedCutoff #1000 m
-passedCutoff = 0 #read from file
-altArray = []
-corrAltArray = []
-for i in range(2): #so that index errors don't occur
-	altArray.append(0)
-	corrAltArray.append(0)
-
-#QNH used for setting altitude
-if ground == 1:
-	try:
-		QNH = round(weather.pressure() / 100,2)
-	except:
-		QNH = -1.0
-	#write it
-else:
-	#read QNH from file
-	continue
-
-#kalman filter variables.  Note that pressure data is already filtered, this is extra on top of it
-#read these from file
-global k1
-k1 = 0.0 #initial value estimation
-global k2
-k2 = 2.0 #initial error estimation
-global k3
-k3 = 0.2 #process noise
-global k4
-k4 = 1.0 #sensor noise
-global k5
-k5 = 0.0 #initialize a variable used later
 
 def frameAssembly(testFrame):
 	cAssembly = ""
@@ -399,8 +299,119 @@ def whereAmI():
 	if ground == 1 and apogeeReached == 1 and squibDeployed == 1:
 		return 6
 	return 0
-		
 
+# use this function to read a value from the config file 
+# pass which parameter you want to read
+def configRead(parameter):
+
+        # read a list of lines into data
+        with open(path, 'r') as file:
+                lines = file.readlines()
+		
+        if parameter == "ground":
+                return lines[12]
+
+        if parameter == "apogeeReached":
+                return lines[15]
+
+        if parameter == "flightMode":
+                return lines[18]
+
+        if parameter == "SQUIBDELAY":
+                return lines[21]
+
+        if parameter == "delayStart":
+                return lines[24]
+
+        if parameter == "QNH":
+                return lines[27]
+
+        if parameter == "FRAMESIZE":
+                return lines[30]
+
+        if parameter == "DECSIZE":
+                return lines[33]
+
+        if parameter == "roundOff":
+                return lines[36]
+
+        if parameter == "k1":
+                return lines[39]
+
+        if parameter == "k2":
+                return lines[42]
+
+        if parameter == "k3":
+                return lines[45]
+
+        if parameter == "k4":
+                return lines[48]
+
+        if parameter == "k5":
+                return lines[51]
+
+        if parameter == "passedCutoff":
+                return lines[54]
+	
+# use this function to write a value to the config file 
+# pass which parameter you want to change and the new value
+def configWrite(parameter, value):
+
+	# read a list of lines into data
+	with open(path, 'r') as file:
+                lines = file.readlines()
+
+	# change desired value
+
+	if parameter == "ground":
+		lines[12] = value
+
+	if parameter == "apogeeReached":
+		lines[15] = value
+
+	if parameter == "flightMode":
+		lines[18] = value
+
+	if parameter == "SQUIBDELAY":
+		lines[21] = value
+
+	if parameter == "delayStart":
+		lines[24] = value
+
+	if parameter == "QNH":
+		lines[27] = value
+
+	if parameter == "FRAMESIZE":
+		lines[30] = value
+
+	if parameter == "DECSIZE":
+		lines[33] = value
+
+	if parameter == "roundOff":
+		lines[36] = value
+
+	if parameter == "k1":
+		lines[39] = value
+
+	if parameter == "k2":
+		lines[42] = value
+
+	if parameter == "k3":
+		lines[45] = value
+
+	if parameter == "k4":
+		lines[48] = value
+
+	if parameter == "k5":
+		lines[51] = value
+
+	if parameter == "passedCutoff":
+		lines[54] = value
+
+	# and write everything back
+	with open(path, 'w') as file:
+		file.writelines(lines)
+	
 #### ---------- Main Loop ---------- ####			
 ###OLD MAIN CONTROL LOOP
 #		while flightMode == 0:
@@ -432,17 +443,130 @@ def whereAmI():
 #			sendFrame()
 
 ###NEW MAIN CONTROL FUNCTIONALITY
+#GPS STARTUP
+try:
+	gpsp = GpsPoller()
+	gpsp.start()
+except:
+	print("GPS NOT FUNCTIONAL")
+	sys.exit(3) #3 for GPS errors
+
+###END GPS INITIALIZATION
+
+#OPEN SERIAL COMMUNICATION PORT
+try:
+	ser = serial.Serial('/dev/ttyUSB0', 9600)
+except:
+	print("RADIO MODULE NOT CONNECTED")
+	sys.exit(1) #1 means the radio module has a problem
+	
+#Open a file to write to
+txfile = open(str(time.time()), "w")
+
+#Defines I2C address of current sensors
+try:
+	ina219A = INA219(0x45)
+	ina219B = INA219(0x41)
+except:
+	print("CURRENT SENSORS NOT CONNECTED")
+	sys.exit(2) #2 means the current/power sensors have a problem
+	
+#GPIO INFO FOR PYROS
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(20, GPIO.OUT)
+GPIO.output(20, 0)
+
+#define frame and frame structure
+frame = [] #a list of dictionaries that stores frames of data
+FRAME_STRUCT = []
+FRAME_STRUCT.append(DataPoint("time", 0, 13, 0))
+FRAME_STRUCT.append(DataPoint("flight_mode", 0, 1, 0))
+FRAME_STRUCT.append(DataPoint("squib_deployed", 0, 1, 0))
+FRAME_STRUCT.append(DataPoint("temp", 0, 4, 1))
+FRAME_STRUCT.append(DataPoint("pressure", 0, 5, -1))
+FRAME_STRUCT.append(DataPoint("current_1", 0, 4, 1))
+FRAME_STRUCT.append(DataPoint("volt_b1", 0, 4, 3))
+FRAME_STRUCT.append(DataPoint("current_2", 0, 4, 1))
+FRAME_STRUCT.append(DataPoint("volt_b2", 0, 4, 3))
+FRAME_STRUCT.append(DataPoint("gps_lat", 1, 10, 6))
+FRAME_STRUCT.append(DataPoint("gps_lon", 1, 10, 6))
+FRAME_STRUCT.append(DataPoint("gps_alt", 0, 5, 1))
+FRAME_STRUCT.append(DataPoint("gps_spd", 0, 4, 1))
+FRAME_STRUCT.append(DataPoint("a_x", 1, 4, 1))
+FRAME_STRUCT.append(DataPoint("a_y", 1, 4, 1))
+FRAME_STRUCT.append(DataPoint("a_z", 1, 4, 1))
+FRAME_STRUCT.append(DataPoint("mag_x", 1, 4, -1))
+FRAME_STRUCT.append(DataPoint("mag_y", 1, 4, -1))
+FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, -1))
+
+#define file path to read from config file
+global path
+path = masterconfig.txt #USE ABSOLUTE PATH WHEN KNOWN
+
+#read values from config file
+FRAMESIZE = 39 #read from file
+DECSIZE = 93 #read from file
+roundOff = 3 #read from file
+#flight variables that will be updated in get frame
+global flightMode
+flightMode = 0 #read from file
+global squibDeployed
+squibDeployed = 0 #read from file
+global SQUIBDELAY
+SQUIBDELAY = 10 #seconds #read from file
+global delayStart
+delayStart = 0 #read from file
+global ground
+ground = 1 #read from file
+global apogeeReached
+apogeeReached = 0 #read from file
+global passedCutoff #1000 m
+passedCutoff = 0 #read from file
+altArray = []
+corrAltArray = []
+for i in range(2): #so that index errors don't occur
+	altArray.append(0)
+	corrAltArray.append(0)
+
+#QNH used for setting altitude
+if ground == 1:
+	try:
+		QNH = round(weather.pressure() / 100,2)
+	except:
+		QNH = -1.0
+	#write it
+else:
+	#read QNH from file
+	continue
+
+#kalman filter variables.  Note that pressure data is already filtered, this is extra on top of it
+#read these from file
+global k1
+k1 = 0.0 #initial value estimation
+global k2
+k2 = 2.0 #initial error estimation
+global k3
+k3 = 0.2 #process noise
+global k4
+k4 = 1.0 #sensor noise
+global k5
+k5 = 0.0 #initialize a variable used later
+
+#Send 2 frames
 sendFrame()
 sendFrame()
+#locate self in code
 flightMode = whereAmI()
+#write it
 while True:
 	try:
 		sendFrame()
 		flightOperation(flightMode)
 		#check for emergency chute deployment, in case something goes wrong, independent of flightmode
-		if frame[-10]["altP"] > 1000:
-			passedCutoff = 1
-			#write it
+		if len(frame) > 10:
+			if frame[-10]["altP"] > 1000:
+				passedCutoff = 1
+				#write it
 		if passedCutoff == 1 and frame[-1]["altP"] < 1000 and squibDeployed == 0:
 			squibDeployed = 1
 			#write it
