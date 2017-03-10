@@ -356,7 +356,7 @@ def configRead(parameter):
 # use this function to write a value to the config file 
 # pass which parameter you want to change and the new value
 def configWrite(parameter, value):
-
+	
 	# read a list of lines into data
 	with open(path, 'r') as file:
                 lines = file.readlines()
@@ -504,24 +504,24 @@ global path
 path = masterconfig.txt #USE ABSOLUTE PATH WHEN KNOWN
 
 #read values from config file
-FRAMESIZE = 39 #read from file
-DECSIZE = 93 #read from file
-roundOff = 3 #read from file
+FRAMESIZE = configRead("FRAMESIZE")
+DECSIZE = configRead("DECSIZE")
+roundOff = configRead("roundOff")
 #flight variables that will be updated in get frame
 global flightMode
-flightMode = 0 #read from file
+flightMode = configRead("flightMode")
 global squibDeployed
-squibDeployed = 0 #read from file
+squibDeployed = configRead("squibDeployed")
 global SQUIBDELAY
-SQUIBDELAY = 10 #seconds #read from file
+SQUIBDELAY = configRead("SQUIBDELAY")
 global delayStart
-delayStart = 0 #read from file
+delayStart = configRead("delayStart")
 global ground
-ground = 1 #read from file
+ground = configRead("ground")
 global apogeeReached
-apogeeReached = 0 #read from file
+apogeeReached = configRead("apogeeReached")
 global passedCutoff #1000 m
-passedCutoff = 0 #read from file
+passedCutoff = configRead("passedCutoff")
 altArray = []
 corrAltArray = []
 for i in range(2): #so that index errors don't occur
@@ -534,23 +534,22 @@ if ground == 1:
 		QNH = round(weather.pressure() / 100,2)
 	except:
 		QNH = -1.0
-	#write it
+	configWrite("QNH")
 else:
-	#read QNH from file
-	continue
+	QNH = configRead("QNH")
 
 #kalman filter variables.  Note that pressure data is already filtered, this is extra on top of it
 #read these from file
-global k1
-k1 = 0.0 #initial value estimation
-global k2
-k2 = 2.0 #initial error estimation
-global k3
-k3 = 0.2 #process noise
-global k4
-k4 = 1.0 #sensor noise
-global k5
-k5 = 0.0 #initialize a variable used later
+global k1 #initial value estimation
+k1 = configRead("k1")
+global k2 #initial error estimation
+k2 = configRead("k2")
+global k3 #process noise
+k3 = configRead("k3")
+global k4 #sensor noise
+k4 = configRead("k4")
+global k5 #initialize a variable used later
+k5 = configRead("k5")
 
 #Send 2 frames
 sendFrame()
