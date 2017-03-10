@@ -508,7 +508,7 @@ DECSIZE = configRead("DECSIZE")
 roundOff = configRead("roundOff")
 #flight variables that will be updated in get frame
 global flightMode
-flightMode = configRead("flightMode")
+flightMode = int(configRead("flightMode"))
 global squibDeployed
 squibDeployed = configRead("squibDeployed")
 global SQUIBDELAY
@@ -564,7 +564,7 @@ while True:
 		if len(frame) > 10:
 			if frame[-10]["altP"] > 1000:
 				passedCutoff = 1
-				configWrite("passedCutoff", passedCutoff")
+				configWrite("passedCutoff", passedCutoff)
 		if passedCutoff == 1 and frame[-1]["altP"] < 1000 and squibDeployed == 0:
 			squibDeployed = 1
 			flightMode = 5
