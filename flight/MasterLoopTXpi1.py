@@ -503,24 +503,24 @@ global path
 path = "masterconfig.txt" #USE ABSOLUTE PATH WHEN KNOWN
 
 #read values from config file
-FRAMESIZE = configRead("FRAMESIZE")
-DECSIZE = configRead("DECSIZE")
-roundOff = configRead("roundOff")
+FRAMESIZE = int(configRead("FRAMESIZE"))
+DECSIZE = int(configRead("DECSIZE"))
+roundOff = int(configRead("roundOff"))
 #flight variables that will be updated in get frame
 global flightMode
 flightMode = int(configRead("flightMode"))
 global squibDeployed
-squibDeployed = configRead("squibDeployed")
+squibDeployed = int(configRead("squibDeployed"))
 global SQUIBDELAY
-SQUIBDELAY = configRead("SQUIBDELAY")
+SQUIBDELAY = int(configRead("SQUIBDELAY"))
 global delayStart
-delayStart = configRead("delayStart")
+delayStart = int(configRead("delayStart"))
 global ground
-ground = configRead("ground")
+ground = int(configRead("ground"))
 global apogeeReached
-apogeeReached = configRead("apogeeReached")
+apogeeReached = int(configRead("apogeeReached"))
 global passedCutoff #1000 m
-passedCutoff = configRead("passedCutoff")
+passedCutoff = int(configRead("passedCutoff"))
 altArray = []
 corrAltArray = []
 for i in range(2): #so that index errors don't occur
@@ -535,20 +535,20 @@ if ground == 1:
 		QNH = -1.0
 	configWrite("QNH", QNH)
 else:
-	QNH = configRead("QNH")
+	QNH = int(configRead("QNH"))
 
 #kalman filter variables.  Note that pressure data is already filtered, this is extra on top of it
 #read these from file
 global k1 #initial value estimation
-k1 = configRead("k1")
+k1 = int(configRead("k1"))
 global k2 #initial error estimation
-k2 = configRead("k2")
+k2 = int(configRead("k2"))
 global k3 #process noise
-k3 = configRead("k3")
+k3 = int(configRead("k3"))
 global k4 #sensor noise
-k4 = configRead("k4")
+k4 = int(configRead("k4"))
 global k5 #initialize a variable used later
-k5 = configRead("k5")
+k5 = int(configRead("k5"))
 
 #Send 2 frames
 sendFrame()
