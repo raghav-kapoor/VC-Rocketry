@@ -3,57 +3,57 @@
 ###### Use lines 11 - n for defining config values ######
 ###### The name of the first value should be ono line 11, the actual value on line 12 (index 11) followed by an empty line on line 13 ######
 ###### Repeat this pattern for all othe config values (Code will read every third line starting from line 12 as values) ######
-
-
-
-
-
-
+#
+#
+#
+#
+#
+#
 ### Ground? ###
-1
-
+0 
+#
 ### Apogee Reached ###
-0
-
+1 
+#
 ### Flight Mode ####
-0
-
+5 
+#
 ### Squib Delay ###
 10
-
+#
 ### Delay Start ###
-0
-
+1489448590.9 
+#
 ### QNH ###
--1.0
-
+1005.71 
+#
 ### Frame Size ###
 39
-
+#
 ### DEC Size ###
 93
-
+#
 ### Roundoff ###
 3
-
+#
 ### K1 ###
 0.0
-
+#
 ### K2 ###
 2.0
-
+#
 ### K3 ###
 0.2
-
+#
 ### K4 ###
 1.0
-
+#
 ### K5 ###
 0.0
-
+#
 ### passed cutoff ###
-0
-
+1 
+#
 ### squib deployed ###
-0
-
+1 
+#

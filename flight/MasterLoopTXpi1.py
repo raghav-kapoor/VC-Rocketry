@@ -99,7 +99,7 @@ def getFrame():
 	try:
 		altArray.append(round(weather.altitude(QNH), 1))
 	except:
-		altArray.append(-1.0)
+		altArray.append(0)
 	#update filter
 	global k1
 	global k2
@@ -151,19 +151,19 @@ def getFrame():
 	try:
 		raw_data["gps_lat"] = round(gpsd.fix.latitude, roundOff)
 	except:
-		raw_data["gps_lat"] = 0.0
+		raw_data["gps_lat"] = 0
 	try:
 		raw_data["gps_lon"] = round(gpsd.fix.longitude, roundOff)
 	except:
-		raw_data["gps_lon"] = 0.0
+		raw_data["gps_lon"] = 0
 	try:
 		raw_data["gps_alt"] = round(gpsd.fix.altitude, roundOff)
 	except:
-		raw_data["gps_alt"] = 0.0
+		raw_data["gps_alt"] = 0
 	try:
 		raw_data["gps_spd"] = round(gpsd.fix.speed, roundOff)
 	except:
-		raw_data["gps_spd"] = 0.0
+		raw_data["gps_spd"] = 0
 	try:
 		raw_data["mag_x"] = round(motion.magnetometer().x, roundOff)
 	except:
@@ -179,8 +179,8 @@ def getFrame():
 	raw_data["altP"] = corrAltArray[-1]
 	for key in raw_data.keys():
 		if (type(raw_data[key]) is not float) and (type(raw_data[key]) is not int):
-			raw_data[key] = 0.0
-	frame.append(raw_data)
+			raw_data[key] = 0
+        frame.append(raw_data)
 
 def sendFrame():
 	getFrame()
@@ -199,16 +199,18 @@ def sendFrame():
 	time.sleep(0.04)
 
 def apogeeCheck():
-	for i in range(10):
-		if frame[-1*i]["altP"] <= 0:
-			return False
-	if (flightMode == 3) and abs(frame[-1]["altP"] - frame[-10]["altP"] < 5):
-		return True
+        if len(frame) > 10:
+                for i in range(10):
+                        if frame[-1*i]["altP"] <= 0:
+                                return False
+                if (flightMode == 3) and abs(frame[-1]["altP"] - frame[-10]["altP"] < 5):
+                        return True
 	return False
 
 def landCheck():
-	if (flightMode == 4) and (abs(frame[-1]["altP"] - frame[-40]["altP"]) < 1):
-		return True
+        if len(frame) > 40:
+                if (flightMode == 4) and (abs(frame[-1]["altP"] - frame[-40]["altP"]) < 1):
+                        return True
 	return False
 
 def sensorCheck():
@@ -310,57 +312,63 @@ def configRead(parameter):
 			lines[i] = lines[i].strip()
 		
         if parameter == "ground":
-                return lines[12]
+                value =  lines[12]
 
-        if parameter == "apogeeReached":
-                return lines[15]
+        elif  parameter == "apogeeReached":
+                value = lines[15]
 
-        if parameter == "flightMode":
-                return lines[18]
+        elif parameter == "flightMode":
+                value =  lines[18]
 
-        if parameter == "SQUIBDELAY":
-                return lines[21]
+        elif parameter == "SQUIBDELAY":
+                value = lines[21]
 
-        if parameter == "delayStart":
-                return lines[24]
+        elif parameter == "delayStart":
+                value = lines[24]
 
-        if parameter == "QNH":
-                return lines[27]
+        elif parameter == "QNH":
+                value = lines[27]
 
-        if parameter == "FRAMESIZE":
-                return lines[30]
+        elif parameter == "FRAMESIZE":
+                value = lines[30]
 
-        if parameter == "DECSIZE":
-                return lines[33]
+        elif parameter == "DECSIZE":
+                value = lines[33]
 
-        if parameter == "roundOff":
-                return lines[36]
+        elif parameter == "roundOff":
+                value = lines[36]
 
-        if parameter == "k1":
-                return lines[39]
+        elif parameter == "k1":
+                value = lines[39]
 
-        if parameter == "k2":
-                return lines[42]
+        elif parameter == "k2":
+                value = lines[42]
 
-        if parameter == "k3":
-                return lines[45]
+        elif parameter == "k3":
+                value = lines[45]
 
-        if parameter == "k4":
-                return lines[48]
+        elif parameter == "k4":
+                value = lines[48]
 
-        if parameter == "k5":
-                return lines[51]
+        elif parameter == "k5":
+                value = lines[51]
 
-        if parameter == "passedCutoff":
-                return lines[54]
+        elif parameter == "passedCutoff":
+                value = lines[54]
 
-        if parameter == "squibDeployed":
-                return lines[57]
+        elif parameter == "squibDeployed":
+                value = lines[57]
 	
+        return value.strip()
+
 # use this function to write a value to the config file 
 # pass which parameter you want to change and the new value
-def configWrite(parameter, value):
+def configWrite(parameter, val):
 	
+
+        value = str(val)
+        value += " \n" 
+
 	# read a list of lines into data
 	with open(path, 'r') as file:
                 lines = file.readlines()
@@ -370,49 +378,49 @@ def configWrite(parameter, value):
 	if parameter == "ground":
 		lines[12] = value
 
-	if parameter == "apogeeReached":
+	elif parameter == "apogeeReached":
 		lines[15] = value
 
-	if parameter == "flightMode":
+	elif parameter == "flightMode":
 		lines[18] = value
 
-	if parameter == "SQUIBDELAY":
+	elif parameter == "SQUIBDELAY":
 		lines[21] = value
 
-	if parameter == "delayStart":
+	elif parameter == "delayStart":
 		lines[24] = value
 
-	if parameter == "QNH":
+	elif parameter == "QNH":
 		lines[27] = value
 
-	if parameter == "FRAMESIZE":
+	elif parameter == "FRAMESIZE":
 		lines[30] = value
 
-	if parameter == "DECSIZE":
+	elif parameter == "DECSIZE":
 		lines[33] = value
 
-	if parameter == "roundOff":
+	elif parameter == "roundOff":
 		lines[36] = value
 
-	if parameter == "k1":
+	elif parameter == "k1":
 		lines[39] = value
 
-	if parameter == "k2":
+	elif parameter == "k2":
 		lines[42] = value
 
-	if parameter == "k3":
+	elif parameter == "k3":
 		lines[45] = value
 
-	if parameter == "k4":
+	elif parameter == "k4":
 		lines[48] = value
 
-	if parameter == "k5":
+	elif parameter == "k5":
 		lines[51] = value
 
-	if parameter == "passedCutoff":
+	elif parameter == "passedCutoff":
 		lines[54] = value
 
-	if parameter == "squibDeployed":
+	elif parameter == "squibDeployed":
                 lines[57] = value
 
 	# and write everything back
@@ -540,7 +548,7 @@ if ground == 1:
 	try:
 		QNH = round(weather.pressure() / 100,2)
 	except:
-		QNH = -1.0
+		QNH = -99999.0
 	configWrite("QNH", QNH)
 else:
 	QNH = float(configRead("QNH"))
