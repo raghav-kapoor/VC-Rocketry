@@ -18,9 +18,6 @@
 ### Flight Mode ####
 0
 
-###  Squib Deployed ####
-0
-
 ### Squib Delay ###
 10
 
@@ -56,3 +53,7 @@
 
 ### passed cutoff ###
 0
+
+### squib deployed ###
+0
+

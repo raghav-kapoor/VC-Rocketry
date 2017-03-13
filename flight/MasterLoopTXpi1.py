@@ -353,6 +353,9 @@ def configRead(parameter):
 
         if parameter == "passedCutoff":
                 return lines[54]
+
+        if parameter == "squibDeployed":
+                return lines[57]
 	
 # use this function to write a value to the config file 
 # pass which parameter you want to change and the new value
@@ -408,6 +411,9 @@ def configWrite(parameter, value):
 
 	if parameter == "passedCutoff":
 		lines[54] = value
+
+	if parameter == "squibDeployed":
+                lines[57] = value
 
 	# and write everything back
 	with open(path, 'w') as file:
