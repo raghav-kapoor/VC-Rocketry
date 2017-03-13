@@ -306,6 +306,8 @@ def configRead(parameter):
         # read a list of lines into data
         with open(path, 'r') as file:
                 lines = file.readlines()
+		for i in range(len(lines)):
+			lines[i] = lines[i].strip()
 		
         if parameter == "ground":
                 return lines[12]
@@ -512,9 +514,9 @@ flightMode = int(configRead("flightMode"))
 global squibDeployed
 squibDeployed = int(configRead("squibDeployed"))
 global SQUIBDELAY
-SQUIBDELAY = int(configRead("SQUIBDELAY"))
+SQUIBDELAY = float(configRead("SQUIBDELAY"))
 global delayStart
-delayStart = int(configRead("delayStart"))
+delayStart = float(configRead("delayStart"))
 global ground
 ground = int(configRead("ground"))
 global apogeeReached
@@ -535,20 +537,20 @@ if ground == 1:
 		QNH = -1.0
 	configWrite("QNH", QNH)
 else:
-	QNH = int(configRead("QNH"))
+	QNH = float(configRead("QNH"))
 
 #kalman filter variables.  Note that pressure data is already filtered, this is extra on top of it
 #read these from file
 global k1 #initial value estimation
-k1 = int(configRead("k1"))
+k1 = float(configRead("k1"))
 global k2 #initial error estimation
-k2 = int(configRead("k2"))
+k2 = float(configRead("k2"))
 global k3 #process noise
-k3 = int(configRead("k3"))
+k3 = float(configRead("k3"))
 global k4 #sensor noise
-k4 = int(configRead("k4"))
+k4 = float(configRead("k4"))
 global k5 #initialize a variable used later
-k5 = int(configRead("k5"))
+k5 = float(configRead("k5"))
 
 #Send 2 frames
 sendFrame()
