@@ -10,22 +10,22 @@
 #
 #
 ### Ground? ###
-0 
-#
-### Apogee Reached ###
 1 
 #
+### Apogee Reached ###
+0 
+#
 ### Flight Mode ####
-5 
+0 
 #
 ### Squib Delay ###
 10
 #
 ### Delay Start ###
-1489448590.9 
+0 
 #
 ### QNH ###
-1005.71 
+1006.0 
 #
 ### Frame Size ###
 39
