@@ -180,6 +180,8 @@ def getFrame():
 	for key in raw_data.keys():
 		if (type(raw_data[key]) is not float) and (type(raw_data[key]) is not int):
 			raw_data[key] = 0
+		if (raw_data[key] != raw_data[key]):
+			raw_data[key] = 0
         frame.append(raw_data)
 
 def sendFrame():
