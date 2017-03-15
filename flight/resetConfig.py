@@ -1,57 +1,30 @@
 def resetConf():
-    # read a list of lines into data
-	  with open(path, 'r') as file:
-        lines = file.readlines()
+	# read a list of lines into data
+	with open(path, 'r') as file:
+		lines = file.readlines()
 
-	  # change values back to defaults
+	# change values back to defaults
 
-		lines[12] = "1\n"
-
-	elif parameter == "apogeeReached":
-		lines[15] = value
-
-	elif parameter == "flightMode":
-		lines[18] = value
-
-	elif parameter == "SQUIBDELAY":
-		lines[21] = value
-
-	elif parameter == "delayStart":
-		lines[24] = value
-
-	elif parameter == "QNH":
-		lines[27] = value
-
-	elif parameter == "FRAMESIZE":
-		lines[30] = value
-
-	elif parameter == "DECSIZE":
-		lines[33] = value
-
-	elif parameter == "roundOff":
-		lines[36] = value
-
-	elif parameter == "k1":
-		lines[39] = value
-
-	elif parameter == "k2":
-		lines[42] = value
-
-	elif parameter == "k3":
-		lines[45] = value
-
-	elif parameter == "k4":
-		lines[48] = value
-
-	elif parameter == "k5":
-		lines[51] = value
-
-	elif parameter == "passedCutoff":
-		lines[54] = value
-
-	elif parameter == "squibDeployed":
-                lines[57] = value
+	lines[12] = "1\n"
+	lines[15] = "0\n"
+	lines[18] = "0\n"
+	lines[21] = "10\n"
+	lines[24] = "0\n"
+	lines[27] = "-1.0\n"
+	lines[30] = "39\n"
+	lines[33] = "93\n"
+	lines[36] = "3\n"
+	lines[39] = "0.0\n"
+	lines[42] = "2.0\n"
+	lines[45] = "0.2\n"
+	lines[48] = "1.0\n"
+	lines[51] = "0.0\n"
+	lines[54] = "0\n"
+	lines[57] = "0\n"
 
 	# and write everything back
 	with open(path, 'w') as file:
 		file.writelines(lines)
+
+path = "masterconfig.txt" #replace with absolute path when known
+resetConf()
