@@ -111,7 +111,7 @@ def getFrame():
     	k1 += (k5*(altArray[-1]-k1))
     	k2 *= (1-k5)
 	corrAltArray.append(round(k1, 0))
-	raw_data = {"time" : time.time(), "flight_mode": flightMode, "squib_deployed": squibDeployed}
+	raw_data = {"time" : time.time(), "flight_mode": flightMode, "squib_deployed": squibDeployed, "QNH": QNH}
 	try:
 		raw_data["a_x"] = round(motion.accelerometer().x, roundOff)
 	except:
@@ -430,42 +430,18 @@ def configWrite(parameter, val):
 		file.writelines(lines)
 	
 #### ---------- Main Loop ---------- ####			
-###OLD MAIN CONTROL LOOP
-#		while flightMode == 0:
-#			sendFrame()
-#			if frame[-1]["current_2"] > 3.0 and QNH > 0:
-#				flightMode = 1
-#		while flightMode == 1:
-#			sendFrame()
-#			if frame[-1]["volt_b1"] > 8.0:
-#				flightMode = 2
-#		while flightMode == 2:
-#			sendFrame()
-#			if abs(frame[-1]["a_z"]) > 1.5:
-#				flightMode = 3
-#		while flightMode == 3:
-#			sendFrame()
-#			if apogeeCheck():
-#				#trigger squib
-#				squibDeployed = 1
-#				#trigger pyros
-#				GPIO.output(21, 1)
-#				GPIO.cleanup()
-#				flightMode = 4
-#		while flightMode == 4:
-#			sendFrame()
-#			if landCheck():
-#				flightMode = 5
-#		while flightMode == 5:
-#			sendFrame()
-
 ###NEW MAIN CONTROL FUNCTIONALITY
+
+#Open a file to write to
+txfile = open(str(time.time()), "w")
+
 #GPS STARTUP
 try:
 	gpsp = GpsPoller()
 	gpsp.start()
 except:
 	print("GPS NOT FUNCTIONAL")
+	txfile.write("ERROR 3: GPS NOT FUNCTIONAL/n")
 	sys.exit(3) #3 for GPS errors
 
 ###END GPS INITIALIZATION
@@ -475,10 +451,8 @@ try:
 	ser = serial.Serial('/dev/ttyUSB0', 9600)
 except:
 	print("RADIO MODULE NOT CONNECTED")
+	txfile.write("ERROR 1: RADIO MODULE NOT CONNECTED/n")
 	sys.exit(1) #1 means the radio module has a problem
-	
-#Open a file to write to
-txfile = open(str(time.time()), "w")
 
 #Defines I2C address of current sensors
 try:
@@ -486,6 +460,7 @@ try:
 	ina219B = INA219(0x41)
 except:
 	print("CURRENT SENSORS NOT CONNECTED")
+	txfile.write("ERROR 2: CCURRENT SENSORS NOT CONNECTED/n")
 	sys.exit(2) #2 means the current/power sensors have a problem
 	
 #GPIO INFO FOR PYROS
@@ -583,6 +558,8 @@ while True:
 			if frame[-10]["altP"] > 1000:
 				passedCutoff = 1
 				configWrite("passedCutoff", passedCutoff)
+				print("EMERGENCY DEPLOYMENT ACTIVATED")
+				txfile.write("EMERGENCY DEPLOYMENT ACTIVATED")
 		if passedCutoff == 1 and frame[-1]["altP"] < 1000 and squibDeployed == 0:
 			squibDeployed = 1
 			flightMode = 5
