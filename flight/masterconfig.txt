@@ -25,7 +25,7 @@
 0 
 #
 ### QNH ###
-1006.0 
+-1.0
 #
 ### Frame Size ###
 39
@@ -52,8 +52,8 @@
 0.0
 #
 ### passed cutoff ###
-1 
+0
 #
 ### squib deployed ###
-1 
+0 
 #
