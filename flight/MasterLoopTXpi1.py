@@ -4,7 +4,7 @@ from Subfact_ina219 import INA219
 try:
 	from envirophat import weather, motion
 except:
-	print("ENVIROPHAT NOT CONNECTED")
+	print("\nENVIROPHAT NOT CONNECTED\n")
 	sys.exit(4) #4 means envirophat not connected
 import gps
 from gps import *
@@ -193,8 +193,8 @@ def sendFrame():
 	try:
 		ser.write("\x7F\x7F" + cFrameEncoded + "\x00\x00")
 	except:
-		print("RADIO MODULE ERROR")
-		txfile.write("RADIO MODULE ERROR\n")
+		print("\nRADIO MODULE ERROR\n")
+		txfile.write("\nRADIO MODULE ERROR\n")
 	txfile.write(str(currentFrame))
 	txfile.write("\n")
 	print(str(currentFrame))
@@ -434,8 +434,8 @@ try:
 	gpsp = GpsPoller()
 	gpsp.start()
 except:
-	print("GPS NOT FUNCTIONAL")
-	txfile.write("ERROR 3: GPS NOT FUNCTIONAL/n")
+	print("\nGPS NOT FUNCTIONAL\n")
+	txfile.write("\nERROR 3: GPS NOT FUNCTIONAL\n")
 	sys.exit(3) #3 for GPS errors
 
 ###END GPS INITIALIZATION
@@ -444,8 +444,8 @@ except:
 try:
 	ser = serial.Serial('/dev/ttyUSB0', 9600)
 except:
-	print("RADIO MODULE NOT CONNECTED")
-	txfile.write("ERROR 1: RADIO MODULE NOT CONNECTED/n")
+	print("\nRADIO MODULE NOT CONNECTED\n")
+	txfile.write("\nERROR 1: RADIO MODULE NOT CONNECTED\n")
 	sys.exit(1) #1 means the radio module has a problem
 
 #Defines I2C address of current sensors
@@ -453,8 +453,8 @@ try:
 	ina219A = INA219(0x45)
 	ina219B = INA219(0x41)
 except:
-	print("CURRENT SENSORS NOT CONNECTED")
-	txfile.write("ERROR 2: CCURRENT SENSORS NOT CONNECTED/n")
+	print("\nCURRENT SENSORS NOT CONNECTED\n")
+	txfile.write("\nERROR 2: CURRENT SENSORS NOT CONNECTED\n")
 	sys.exit(2) #2 means the current/power sensors have a problem
 	
 #GPIO INFO FOR PYROS
