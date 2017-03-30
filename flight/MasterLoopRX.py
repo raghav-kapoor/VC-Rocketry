@@ -69,6 +69,29 @@ def frameDisassembly(decAssembly):
 		decAssembly = decAssembly[dataPoint.length:]
 	return cFrame
 
+def nicePrintout(data):
+	print("\rTime: {0}".format(data["time"]), end = " ")
+	print(" Flight mode: {0}".format(data["flight_mode"]), end = " ")
+	print(" Squib Deployed: {0}".format(data["squib_deployed"]), end = " ")
+	print(" Temperature: {0}".format(data["temp"]), end = " ")
+	print(" Pressure: {0}".format(data["pressure"]), end = " ")
+	print(" Current 1: {0}".format(data["current_1"]), end = " ")
+	print(" Bus Voltage 1: {0}".format(data["volt_b1"]), end = " ")
+	print(" Current 2: {0}".format(data["current_2"]), end = " ")
+	print(" Bus Voltage 2: {0}".format(data["volt_b2"]), end = " ")
+	print(" GPS Latitude: {0}".format(data["gps_lat"]), end = " ")
+	print(" GPS Longitude: {0}".format(data["gps_lon"]), end = " ")
+	print(" GPS Altitude: {0}".format(data["gps_alt"]), end = " ")
+	print(" GPS Speed: {0}".format(data["gps_spd"]), end = " ")
+	print(" Acceleration X: {0}".format(data["a_x"]), end = " ")
+	print(" Acceleration Y: {0}".format(data["a_y"]), end = " ")
+	print(" Acceleration Z: {0}".format(data["a_z"]), end = " ")
+	print(" Magnetometer X: {0}".format(data["mag_x"]), end = " ")
+	print(" Magnetometer Y: {0}".format(data["mag_y"]), end = " ")
+	print(" Magnetometer Z: {0}".format(data["mag_z"]), end = " ")
+	     
+test={"time": 420, "flight_mode": 420, "squib_deployed": 420, "temp": 420, "pressure": 420, "current_1": 420, "volt_b1": 420, "current_2": 420, "volt_b2": 420, "gps_lat": 420, "gps_lon": 420, "gps_alt": 420, "gps_spd": 420, "a_x": 420, "a_y": 420, "a_z": 420, "mag_x": 420, "mag_y": 420, "mag_z": 420}
+
 FRAME_STRUCT = []
 FRAME_STRUCT.append(DataPoint("time", 0, 13, -3))
 FRAME_STRUCT.append(DataPoint("flight_mode", 0, 1, 0))
@@ -106,7 +129,7 @@ while True:
 				disassembledData[key] = round(disassembledData[key], 3)
 			rxfile.write(str(disassembledData))
 			rxfile.write("\n")
-			print(str(disassembledData))
+			nicePrintout(disassembledData)
 			fCount += 1
 		    tempLine = ""
 	except (KeyboardInterrupt):
