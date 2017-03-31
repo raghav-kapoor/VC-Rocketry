@@ -355,6 +355,9 @@ def configRead(parameter):
         elif parameter == "squibDeployed":
                 value = lines[57]
 	
+	elif parameter == "cutoff":
+		value = lines[60]
+	
         return value.strip()
 
 # use this function to write a value to the config file 
@@ -418,6 +421,9 @@ def configWrite(parameter, val):
 
 	elif parameter == "squibDeployed":
                 lines[57] = value
+	
+	elif parameter == "cutoff":
+		lines[60] = value
 
 	# and write everything back
 	with open(path, 'w') as file:
@@ -508,6 +514,8 @@ global apogeeReached
 apogeeReached = int(configRead("apogeeReached"))
 global passedCutoff #1000 m
 passedCutoff = int(configRead("passedCutoff"))
+global cutoff #right now 1000 m
+cutoff = int(configRead("cutoff"))
 altArray = []
 corrAltArray = []
 for i in range(2): #so that index errors don't occur
