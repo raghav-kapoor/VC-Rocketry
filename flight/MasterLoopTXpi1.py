@@ -551,11 +551,9 @@ while True:
 		if len(frame) > 10:
 			if frame[-10]["altP"] > 1000:
 				passedCutoff = 1
-				flightMode = 5
+				flightMode = 3
 				configWrite("passedCutoff", passedCutoff)
 				configWrite("flightMode", flightMode)
-				print("EMERGENCY DEPLOYMENT ACTIVATED")
-				txfile.write("EMERGENCY DEPLOYMENT ACTIVATED")
 		if passedCutoff == 1 and frame[-1]["altP"] < 1000 and squibDeployed == 0:
 			squibDeployed = 1
 			flightMode = 5
@@ -563,6 +561,8 @@ while True:
 			configWrite("flightMode", flightMode)
 			GPIO.output(20,1)
 			GPIO.cleanup()		
+			print("EMERGENCY DEPLOYMENT ACTIVATED")
+			txfile.write("EMERGENCY DEPLOYMENT ACTIVATED")
 			
 	except(KeyboardInterrupt):
 		gpsp.running = False
