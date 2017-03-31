@@ -557,12 +557,12 @@ while True:
 		flightOperation(flightMode)
 		#check for emergency chute deployment, in case something goes wrong, independent of flightmode
 		if len(frame) > 10:
-			if frame[-10]["altP"] > 1000:
+			if frame[-10]["altP"] > cutoff:
 				passedCutoff = 1
 				flightMode = 3
 				configWrite("passedCutoff", passedCutoff)
 				configWrite("flightMode", flightMode)
-		if passedCutoff == 1 and frame[-1]["altP"] < 1000 and squibDeployed == 0:
+		if passedCutoff == 1 and frame[-1]["altP"] < cutoff and squibDeployed == 0:
 			squibDeployed = 1
 			flightMode = 5
 			configWrite("squibDeployed", squibDeployed)
