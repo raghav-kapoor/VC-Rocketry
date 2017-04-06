@@ -433,7 +433,7 @@ def configWrite(parameter, val):
 ###NEW MAIN CONTROL FUNCTIONALITY
 
 #Open a file to write to
-txfile = open(str(time.time()), "w")
+txfile = open("/home/pi/VC-Rocketry/flight/" + str(time.time()) + ".txt", "w")
 
 #GPS STARTUP
 try:
@@ -442,6 +442,7 @@ try:
 except:
 	print("\nGPS NOT FUNCTIONAL\n")
 	txfile.write("\nERROR 3: GPS NOT FUNCTIONAL\n")
+	txfile.close()
 	sys.exit(3) #3 for GPS errors
 
 ###END GPS INITIALIZATION
@@ -452,6 +453,7 @@ try:
 except:
 	print("\nRADIO MODULE NOT CONNECTED\n")
 	txfile.write("\nERROR 1: RADIO MODULE NOT CONNECTED\n")
+	txfile.close()
 	sys.exit(1) #1 means the radio module has a problem
 
 #Defines I2C address of current sensors
@@ -461,6 +463,7 @@ try:
 except:
 	print("\nCURRENT SENSORS NOT CONNECTED\n")
 	txfile.write("\nERROR 2: CURRENT SENSORS NOT CONNECTED\n")
+	txfile.close()
 	sys.exit(2) #2 means the current/power sensors have a problem
 	
 #GPIO INFO FOR PYROS
