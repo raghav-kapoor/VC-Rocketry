@@ -113,6 +113,7 @@ FRAME_STRUCT.append(DataPoint("mag_x", 1, 4, 1))
 FRAME_STRUCT.append(DataPoint("mag_y", 1, 4, 1))
 FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, 1))
 
+frames = []
 fCount = 0
 while True:
 	try:
@@ -129,7 +130,8 @@ while True:
 				disassembledData[key] = round(disassembledData[key], 3)
 			rxfile.write(str(disassembledData))
 			rxfile.write("\n")
-			nicePrintout(disassembledData)
+			frames.append(disassembledData)
+			print(disassembledData)
 			fCount += 1
 		    tempLine = ""
 	except (KeyboardInterrupt):
