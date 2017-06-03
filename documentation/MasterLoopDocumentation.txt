@@ -1,0 +1,41 @@
+DOCUMENTATION FOR MASTERLOOPTXPI1
+
+SEE SOFTWARE FLOWCHARTS ADDITIONALLY
+
+FLIGHTMODES
+	0: Just turned it on.
+	1: Passed preflight check #1
+	2: Passed preflight check #2
+	3: In ascent
+	4: Reached apogee, in descent
+	5: In descent, waiting to deploy squibs
+	6: Landed, waiting for pickup
+	
+TRIGGERS
+	Preflight check #1: LiPo disconnected from external power (we pulled out the switch)
+	Preflight check #2: 9V battery connected
+	Determining ascent: z-acceleration greater than 3.5 g
+	Determining apogee: based on altitude from pressure
+		none of the measurements are <= zero (sensor is still intact)
+		the last 10 measurements are within 5 meters
+	Determining deployment: apogee detection starts a timer
+	Determining landed:  last 40 measurements are within 1 meter.
+
+OTHER DETAILS
+	Data is sampled 25 times/second, and sent down at that rate.
+		Could be adapted to sample more frequently (50 times/second) and only send every other frame down
+		Data is written out to a file with the timestamp of the start time of the program.
+	Emergency deployment:  whenever the rocket passes a particular altitude for cutoff (set before hand),
+		a flag is enabled, and emergency deployment is now permitted
+		If the altitude is ever below that cutoff again, the squibs have not yet been deployed,
+		and apogee has not yet been detected, then the rocket must have missed apogee detection
+		and the emergency deployment system activates
+		This takes care of the issue if the pHat sensor fails mid-flight
+	Initial parameters:
+		Set in a separate file.  Each time the program runs, it reads the file.
+		parameters are updated one at a time in the program when necessary (safety)
+	Errors:
+		All errors are named and written to files, where possible.
+		If data fails to transmit, that will be written to the file.
+		If a sensor fails, zeroes or negative numbers are written in place of the real data.
+		The only fatal errors occur when a sensor is being initialized and it is not found (pHat specifically)
