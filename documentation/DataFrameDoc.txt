@@ -1,0 +1,36 @@
+Data Frame Documentation
+
+Our data frame consists of 2 start bits (DEL), 39 ASCII characters that encode all of the data, and 2 end bits (NUL).
+The decoding software reads for these control bits and then sends the 39 character string to processing
+The variable FRAME_STRUCT is an array that keeps track of which information is where, how long it is, how it was rounded/truncated, and what positivity/negativity it had.
+The 39 character string is processed by the function asciiToBin, which turns the 39 characters into a very long binary string.
+This binary string is processed by the function binToDec, which turns that binary into the actual decimal numbers that are the data.
+This decimal string is then truncated and processed referencing the FRAME_STRUCT variable into each data measurement, and entered into a dictionary with the following keys:
+This dictionary is then added to an array of frames.  To get the most recent value of a measurement, access frames[-1]["nameOfKey"].  Or, you could simply do all of the webpage updating in the decoding loop to obviate the need for such large program data storage.
+	["key: description of format" style follows]
+	time: linux time
+	flight_mode: 0-6; display 0 as INITIALIZED, 1 as PASSED PREFLIGHT 1, 2 as PASSED PREFLIGHT 2, 3 as LAUNCHED AND ASCENDING, 4 as REACHED APOGEE, 5 as DEPLOYED PARACHUTES AND DESCENDING, 6 as LANDED
+	squib_deployed: 0-1; display 0 as NO and 1 as YES
+	temp: in degrees C.  Note that this reading includes the temperature of the CPU, which should be estimated and subtracted out for display.
+	pressure: in hPa
+	current_1: in mA
+	volt_b1:  in V
+	current_2: in mA
+	volt_b2:  in V
+	gps_lat: a string of concatenated numbers in the DMS (degrees, minutes, seconds) format. Degrees is first 2 (if string is 1 char short of normal) or 3 characters, minutes in next 2, seconds is the rest with a decimal point after the first 2
+	gps_lon: a string of concatenated numbers in the DMS (degrees, minutes, seconds) format. Degrees is first 2 (if string is 1 char short of normal) or 3 characters, minutes in next 2, seconds is the rest with a decimal point after the first 2
+	gps_alt: in meters
+	gps_spd: in meters/seconds
+	a_x: accelerometer reading, in relative g forces.
+	a_y: accelerometer reading, in relative g forces.
+	a_z: accelerometer reading, in relative g forces.
+	mag_x: magnetometer reading, Gauss (check this, might by nanotesla = gamma)
+	mag_y: magnetometer reading, Gauss (check this, might by nanotesla = gamma)
+	mag_z: magnetometer reading, Gauss (check this, might by nanotesla = gamma)
+In the PIUI output, all of the above values should be displayed (in some organized fashion) on the webpage.
+Additionally, next to the pressure value, display the QNH.  Set QNH to be the tenth pressure reading received from the sensor.
+Additionally, next to the pressure value, display an altitude value calculated from the current pressure reading and the QNH value
+	Use the following formula: altitude = 44330.0 * (1.0 - pow(pressure / (QNH*100), (1.0/5.255))) #(in python syntax)
+	This returns altitude relative to ground (aka where the rocket is), in meters.
+	If you would like, you can also calculate true altitude from sea level, in which case you should use the QNH value of 1013.25 hPa.
+Display these values as QNH and altitude from pressure, near the temperature and pressure readings.
