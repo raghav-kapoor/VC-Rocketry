@@ -2,8 +2,8 @@
 ###### Lines 1 - 10 are dedicated for notes ######
 ###### Use lines 11 - n for defining config values ######
 ###### The name of the first value should be ono line 11, the actual value on line 12 (index 11) followed by an empty line on line 13 ######
-###### Repeat this pattern for all othe config values (Code will read every third line starting from line 12 as values) ######
-#
+###### Repeat this pattern for all other config values (Code will read every third line starting from line 12 as values) ######
+###### To change the default values for this file, change the values written in resetConfig.py.  They are in the same order. ######
 #
 #
 #
