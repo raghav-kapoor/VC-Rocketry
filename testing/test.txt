@@ -1,0 +1,2 @@
+This folder will contain folders that should contain programs to test each of the peripherals individually.
+When a new component is bought/added, make sure to add a folder and some test files as necessary.
