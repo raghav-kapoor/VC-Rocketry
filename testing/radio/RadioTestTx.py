@@ -6,7 +6,7 @@ message = message + "M" * 39
 count=0
 while True:
   try:
-    count++
+    count += 1
     tempMessage = message + str(count).zfill(4)
     ser.write(tempMessage)
     time.sleep(0.04)
