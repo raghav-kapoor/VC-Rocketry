@@ -1,22 +1,3 @@
-Skip to content
-This repository
-Search
-Pull requests
-Issues
-Marketplace
-Gist
- @ABLV2539
- Sign out
- Watch 7
-  Star 1
-  Fork 1 raghav-kapoor/VC-Rocketry
- Code  Issues 0  Pull requests 0  Projects 0  Wiki Insights 
-Branch: organizedBranch Find file Copy pathVC-Rocketry/flight/MasterLoopTXpi1.py
-b802da7  on Apr 6
-@dqawami dqawami Updates to masterloop to load on boot file
-3 contributors @ABLV2539 @3096 @dqawami
-RawBlameHistory     
-585 lines (512 sloc)  16.2 KB
 import sys
 import time
 from Subfact_ina219 import INA219
