@@ -60,4 +60,3 @@ while True:
     time.sleep(0.02)
     outfile.write(str(frames))
     i+=1
-

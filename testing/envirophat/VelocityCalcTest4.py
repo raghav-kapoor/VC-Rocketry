@@ -20,16 +20,18 @@ frames = [0] #corrected value
 errors = [] #measured value
 vframes = [0]
 verrors = [0]
+roundOff = 1
 
 def getFrame():
     raw_data = { "linux_time": (time.time()),
-                 "a_x": round(motion.accelerometer().x, 2),
+                 "a_x": motion.accelerometer().x,
                  #"a_y": round(motion.accelerometer().y, roundOff)
                  }
     errors.append(raw_data)
     
 def velocity(a1, a2, tstep): #from t-1 to t
     v = (a1+a2) * 0.5 * tstep * 9.8
+    v = round(v, 2)
     return v
     
 
@@ -37,6 +39,7 @@ getFrame()
 vframe = 0
 verror = 0
 i = 0
+n = 0
 while True:
     getFrame()
         
@@ -55,9 +58,13 @@ while True:
     verrors.append(verror)
     #if (i%10 == 0):
     #print(round(errors[-1]["a_x"], 1), round(x, 1))
-    #print(round(verror, 4), round(vframe, 4))
-    print(round(x,2), round(vframe,1))
+    #print(round(verror, 2), round(vframe, 2))
+    
+    if errors[-1]["a_x"] > .05:
+        n+=1
+    if errors[-1]["a_x"] < -.05:
+        n-=1
+    print errors[-1]["a_x"]
     time.sleep(0.02)
     outfile.write(str(frames))
     i+=1
-

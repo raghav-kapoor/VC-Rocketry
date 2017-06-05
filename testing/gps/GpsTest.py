@@ -27,11 +27,9 @@ if __name__ == '__main__':
     go = True
     while go:
 	print gpsd.fix.latitude
-        if gpsd.fix.latitude != 0.0:
+        if gpsd.fix.latitude < 0.0 or gpsd.fix.latitude > 0.0:
             go = False
             print("GPS Locked")
         else:
             time.sleep(0.5)
-
-
-
+    print(gpsd.fix.latitude, gpsd.fix.longitude, gpsd.fix.altitude, gpsd.fix.speed)

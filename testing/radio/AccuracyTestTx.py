@@ -27,4 +27,3 @@ ser.write(end*10) #what will happen?
 time.sleep(0.5)
 ser.write(start*2 + goodFrame + end*2) #is this still read as a good frame?
 time.sleep(0.5)
-
