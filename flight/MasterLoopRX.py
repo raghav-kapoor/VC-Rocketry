@@ -69,7 +69,7 @@ def frameDisassembly(decAssembly):
 		decAssembly = decAssembly[dataPoint.length:]
 	return cFrame
 
-def nicePrintout(data):
+'''def nicePrintout(data):
 	print(" Time: {0}".format(data["time"]), end = " ", flush = True)
 	print(" Flight mode: {0}".format(data["flight_mode"]), end = " ", flush = True)
 	print(" Squib Deployed: {0}".format(data["squib_deployed"]), end = " ", flush = True)
@@ -88,7 +88,7 @@ def nicePrintout(data):
 	print(" Acceleration Z: {0}".format(data["a_z"]), end = " ", flush = True)
 	print(" Magnetometer X: {0}".format(data["mag_x"]), end = " ", flush = True)
 	print(" Magnetometer Y: {0}".format(data["mag_y"]), end = " ", flush = True)
-	print(" Magnetometer Z: {0}".format(data["mag_z"]), end = "\r", flush = True)
+	print(" Magnetometer Z: {0}".format(data["mag_z"]), end = "\r", flush = True)'''
 	     
 test={"time": 420, "flight_mode": 420, "squib_deployed": 420, "temp": 420, "pressure": 420, "current_1": 420, "volt_b1": 420, "current_2": 420, "volt_b2": 420, "gps_lat": 420, "gps_lon": 420, "gps_alt": 420, "gps_spd": 420, "a_x": 420, "a_y": 420, "a_z": 420, "mag_x": 420, "mag_y": 420, "mag_z": 420}
 

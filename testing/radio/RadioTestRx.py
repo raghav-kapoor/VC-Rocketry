@@ -1,5 +1,5 @@
 import serial
-from time import sleep
+import time
 ser = serial.Serial('/dev/ttyUSB0', 9600)
 outfile = open("reception" + str(time.time()) + ".txt", "w")
 
