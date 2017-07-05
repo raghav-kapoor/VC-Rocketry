@@ -223,12 +223,12 @@ def flightOperation(mode):
 	global ground
 	global apogeeReached
 	if mode == 0:
-		if frame[-1]["current_2"] > 3.0:
+		if frame[-1]["current_2"] > 300.0:
 			flightMode = 1
 			configWrite("flightMode", flightMode)
 		return
 	if mode == 1:
-		if frame[-1]["current_2"] < 3.0:
+		if frame[-1]["current_2"] < 300.0:
 			flightMode = 0
 			configWrite("flightMode", flightMode)
 			return
@@ -237,7 +237,7 @@ def flightOperation(mode):
 			configWrite("flightMode", flightMode)
 		return
 	if mode == 2:
-		if frame[-1]["current_2"] < 3.0 or frame[-1]["volt_b1"] < 8.0:
+		if frame[-1]["current_2"] < 300.0 or frame[-1]["volt_b1"] < 8.0:
 			flightMode = 0
 			configWrite("flightMode", flightMode)
 			return
