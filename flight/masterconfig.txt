@@ -19,7 +19,7 @@
 0 
 #
 ### Squib Delay ###
-10
+1
 #
 ### Delay Start ###
 0 

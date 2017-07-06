@@ -149,19 +149,19 @@ def getFrame():
 	except:
 		raw_data["current_2"] = 0.0
 	try:
-		raw_data["gps_lat"] = round(gpsd.fix.latitude, roundOff)
+		raw_data["gps_lat"] = round(gpsd.fix.latitude, roundOff + 3)
 	except:
 		raw_data["gps_lat"] = 0
 	try:
-		raw_data["gps_lon"] = round(gpsd.fix.longitude, roundOff)
+		raw_data["gps_lon"] = round(gpsd.fix.longitude, roundOff + 3)
 	except:
 		raw_data["gps_lon"] = 0
 	try:
-		raw_data["gps_alt"] = round(gpsd.fix.altitude, roundOff)
+		raw_data["gps_alt"] = round(gpsd.fix.altitude, roundOff + 3)
 	except:
 		raw_data["gps_alt"] = 0
 	try:
-		raw_data["gps_spd"] = round(gpsd.fix.speed, roundOff)
+		raw_data["gps_spd"] = round(gpsd.fix.speed, roundOff + 3)
 	except:
 		raw_data["gps_spd"] = 0
 	try:
