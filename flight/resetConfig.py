@@ -8,7 +8,7 @@ def resetConf():
 	lines[12] = "1\n"
 	lines[15] = "0\n"
 	lines[18] = "0\n"
-	lines[21] = "10\n"
+	lines[21] = "1\n"
 	lines[24] = "0\n"
 	lines[27] = "-1.0\n"
 	lines[30] = "39\n"
@@ -21,6 +21,7 @@ def resetConf():
 	lines[51] = "0.0\n"
 	lines[54] = "0\n"
 	lines[57] = "0\n"
+	lines[61] = "1000\n"
 
 	# and write everything back
 	with open(path, 'w') as file:
