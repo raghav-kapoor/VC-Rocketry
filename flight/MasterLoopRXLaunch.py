@@ -119,6 +119,8 @@ FRAME_STRUCT.append(DataPoint("mag_x", 1, 4, 1))
 FRAME_STRUCT.append(DataPoint("mag_y", 1, 4, 1))
 FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, 1))
 
+qnh = -1
+qnh_counter = 0
 frames = []
 fCount = 0
 while True:
@@ -137,12 +139,15 @@ while True:
 			#rxfile.write(str(disassembledData))
 			#rxfile.write("\n")
 			frames.append(disassembledData)
+			qnh_counter = qnh_counter+1
+			if qnh_counter == 10:
+				qnh = disassembledData["pressure"]
 			output = """
 a_x: {a_x}g
 a_y: {a_y}g
 a_z: {a_z}g
 temp: {temp}°C
-pressure: {pressure}hPa
+pressure: {pressure}hPa - QNH: {qnh_val} - Altitude from pressure: {alt}
 current_1: {current_1}mA
 volt_b1: {volt_b1}V
 current_2: {current_2}mA
@@ -160,6 +165,8 @@ mag_z: {mag_z} Gauss
 			a_z = disassembledData["a_z"],
 			temp = disassembledData["temp"],
 			pressure = disassembledData["pressure"],
+			qnh_val = qnh
+			alt =  44330.0 * (1.0 - pow(disassembledData["pressure"]/(qnh*100), (1.0/5.255)))
 			current_1 = disassembledData["current_1"],
 			volt_b1 = disassembledData["volt_b1"],
 			current_2 = disassembledData["current_2"],
