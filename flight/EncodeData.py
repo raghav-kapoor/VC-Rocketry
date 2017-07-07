@@ -40,7 +40,7 @@ class DataPoint:
 		self.decOffset = decOffset
 
 testFrame = { 
-	"time": time.time(),
+	"time": time.time()*1000,
 	"flight_mode": 0,
 	"squib_deployed": 0,
 	"temp": 24.1167,
@@ -85,9 +85,9 @@ size = 0
 for dataPoint in FRAME_STRUCT:
 	size +=  dataPoint.length
 
-def frameAssembly(testFrame):
+def frameAssemblyOld(testFrame):
 	cAssembly = ""
-	cAssembly += str(int(testFrame["time"]*1000))
+	cAssembly += str(int(testFrame["time"]))
 	cAssembly += str(testFrame["flight_mode"])
 	cAssembly += str(testFrame["squib_deployed"])
 	cAssembly += str(abs(int(testFrame["temp"]*10))).zfill(4)[-4:]
@@ -108,6 +108,20 @@ def frameAssembly(testFrame):
 	cAssembly += "0" + str(int(testFrame["mag_z"]/10)).zfill(3)[-3:] if testFrame["mag_z"] > 0 else "1" + str(abs(int(testFrame["mag_z"]/10))).zfill(3)[-3:]
 	return cAssembly
 
+def frameAssembly(frame):
+    cAssembly = ""
+
+    for dataPoint in FRAME_STRUCT:
+        cFrame = str(abs(int(frame[dataPoint.name]*(10**dataPoint.decOffset)))).zfill(dataPoint.length)[-dataPoint.length:]
+        if dataPoint.hasPositivity:
+            cFrame = cFrame[-(dataPoint.length-1):]
+            cFrame = "0" + cFrame if frame[dataPoint.name] > 0 else "1" + cFrame
+        print cFrame
+        cAssembly += cFrame
+    
+    return cAssembly
+
+
 def frameDisassembly(decAssembly):
 	if (len(decAssembly) != size):
 		return "FrameWrongSize\n"
@@ -125,8 +139,11 @@ def frameDisassembly(decAssembly):
 
 	return cFrame
 
+
 cFrameAssembly = frameAssembly(testFrame)
 print cFrameAssembly
+cFrameAssemblyOld = frameAssemblyOld(testFrame)
+print cFrameAssemblyOld
 cFrameBin = decToBin(cFrameAssembly)
 print cFrameBin
 cFrameEncoded = binToAscii(cFrameBin)
