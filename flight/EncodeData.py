@@ -72,7 +72,6 @@ def frameAssembly(frame):
         if dataPoint.hasPositivity:
             cFrame = cFrame[-(dataPoint.length-1):]
             cFrame = "0" + cFrame if frame[dataPoint.name] > 0 else "1" + cFrame
-        print cFrame
         cAssembly += cFrame
     
     return cAssembly
@@ -83,9 +82,7 @@ def frameDisassembly(decAssembly):
         return "FrameWrongSize\n"
 
     cFrame = {}
-
     for dataPoint in FRAME_STRUCT:
-        
         if dataPoint.hasPositivity:
             cFrame[dataPoint.name] = (int(decAssembly[0:1])*-2+1) * int(decAssembly[1:dataPoint.length]) * (float(10**dataPoint.decOffset))
         else:
@@ -93,7 +90,15 @@ def frameDisassembly(decAssembly):
         
         decAssembly = decAssembly[dataPoint.length:]
 
+    print cFrame
     return cFrame
+
+def encodeFrame(frame):
+    return binToAscii(decToBin(frameAssembly(frame)))
+
+def decodeFrame(encodedStr):
+    frame = frameDisassembly(binToDec(asciiToBin(encodedStr)))
+    return frame
 
 '''
 testFrame = { 
@@ -116,15 +121,10 @@ testFrame = {
     "mag_x": 1395,
     "mag_y": -2182,
     "mag_z": -3231 }
-
-cFrameAssembly = frameAssembly(testFrame)
-print cFrameAssembly
-cFrameBin = decToBin(cFrameAssembly)
-print cFrameBin
-cFrameEncoded = binToAscii(cFrameBin)
-print cFrameEncoded
-decodedDec = binToDec(asciiToBin(cFrameEncoded))
-print frameDisassembly(decodedDec)
+encodedStr = encodeFrame(testFrame)
+decodedFrame = decodeFrame(encodedStr)
+print testFrame
+print encodedStr
+print decodedFrame
 print size
-print len(decodedDec)
 '''
