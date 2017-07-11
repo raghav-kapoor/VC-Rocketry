@@ -15,6 +15,11 @@ DECSIZE = 93
 frames = []
 fCount = 0
 
+# Function displaying frames in an orderly fashion
+def write(line):
+	sys.stdout.write(line)
+	sys.stdout.flush()
+
 while True:
     try:
         tempLine = ""
