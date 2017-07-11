@@ -3,22 +3,25 @@
 import time
 import serial
 import sys
+import math
 
 ser = serial.Serial("/dev/ttyUSB0", 9600)
 rxfile = open("testreceive.txt", "w")
 FRAMESIZE= 39
 DECSIZE = 93
 
-
+#Converts ascii frames to binary
 def asciiToBin(x):
 	binStr = ''
 	for i in x:
 		binStr+=str(((bin(ord(i)))[2:]).zfill(8))
 	return binStr
 
+#Converts binary frames to decimal
 def binToDec(x):
 	return(str(int(str(x),2)))
 
+# Function displaying frames in an orderly fashion
 def write(line):
 	sys.stdout.write(line)
 	sys.stdout.flush()
@@ -75,29 +78,6 @@ def frameDisassembly(decAssembly):
 		decAssembly = decAssembly[dataPoint.length:]
 	return cFrame
 
-'''def nicePrintout(data):
-	print(" Time: {0}".format(data["time"]), end = " ", flush = True)
-	print(" Flight mode: {0}".format(data["flight_mode"]), end = " ", flush = True)
-	print(" Squib Deployed: {0}".format(data["squib_deployed"]), end = " ", flush = True)
-	print(" Temperature: {0}".format(data["temp"]), end = " ", flush = True)
-	print(" Pressure: {0}".format(data["pressure"]), end = " ", flush = True)
-	print(" Current 1: {0}".format(data["current_1"]), end = " ", flush = True)
-	print(" Bus Voltage 1: {0}".format(data["volt_b1"]), end = " ", flush = True)
-	print(" Current 2: {0}".format(data["current_2"]), end = " ", flush = True)
-	print(" Bus Voltage 2: {0}".format(data["volt_b2"]), end = " ", flush = True)
-	print(" GPS Latitude: {0}".format(data["gps_lat"]), end = " ", flush = True)
-	print(" GPS Longitude: {0}".format(data["gps_lon"]), end = " ", flush = True)
-	print(" GPS Altitude: {0}".format(data["gps_alt"]), end = " ", flush = True)
-	print(" GPS Speed: {0}".format(data["gps_spd"]), end = " ", flush = True)
-	print(" Acceleration X: {0}".format(data["a_x"]), end = " ", flush = True)
-	print(" Acceleration Y: {0}".format(data["a_y"]), end = " ", flush = True)
-	print(" Acceleration Z: {0}".format(data["a_z"]), end = " ", flush = True)
-	print(" Magnetometer X: {0}".format(data["mag_x"]), end = " ", flush = True)
-	print(" Magnetometer Y: {0}".format(data["mag_y"]), end = " ", flush = True)
-	print(" Magnetometer Z: {0}".format(data["mag_z"]), end = "\r", flush = True)'''
-	     
-test={"time": 420, "flight_mode": 420, "squib_deployed": 420, "temp": 420, "pressure": 420, "current_1": 420, "volt_b1": 420, "current_2": 420, "volt_b2": 420, "gps_lat": 420, "gps_lon": 420, "gps_alt": 420, "gps_spd": 420, "a_x": 420, "a_y": 420, "a_z": 420, "mag_x": 420, "mag_y": 420, "mag_z": 420}
-
 FRAME_STRUCT = []
 FRAME_STRUCT.append(DataPoint("time", 0, 13, -3))
 FRAME_STRUCT.append(DataPoint("flight_mode", 0, 1, 0))
@@ -121,6 +101,7 @@ FRAME_STRUCT.append(DataPoint("mag_z", 1, 4, 1))
 
 frames = []
 fCount = 0
+
 while True:
 	try:
 	    tempLine = ""
@@ -154,6 +135,7 @@ gps_spd: {gps_spd}m/s
 mag_x: {mag_x} Gauss
 mag_y: {mag_y} Gauss
 mag_z: {mag_z} Gauss
+angle: {angle}degrees
 """.format(
 			a_x = disassembledData["a_x"],
 			a_y = disassembledData["a_y"],
@@ -170,13 +152,13 @@ mag_z: {mag_z} Gauss
 			gps_spd = disassembledData["gps_spd"],
 			mag_x = disassembledData["mag_x"],
 			mag_y = disassembledData["mag_y"],
-			mag_z = disassembledData["mag_z"]
+			mag_z = disassembledData["mag_z"],
+			angle = 90-math.atan((disassembledData["mag_y"])/(disassembledData["mag_x"]))*180/(3.14)
     	)
 			output = output.replace("\n","\n\033[K")
                         write(output)
                         lines = len(output.split("\n"))
                         write("\033[{}A".format(lines - 1))
-                        time.sleep(1)
                         fCount += 1
                 tempLine = ""
 	except (KeyboardInterrupt):
