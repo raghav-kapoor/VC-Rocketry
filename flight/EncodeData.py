@@ -84,13 +84,14 @@ def frameDisassembly(decAssembly):
     cFrame = {}
     for dataPoint in FRAME_STRUCT:
         if dataPoint.hasPositivity:
-            cFrame[dataPoint.name] = (int(decAssembly[0:1])*-2+1) * int(decAssembly[1:dataPoint.length]) * (float(10**dataPoint.decOffset))
+            data = (int(decAssembly[0:1])*-2+1) * int(decAssembly[1:dataPoint.length]) / (float(10**dataPoint.decOffset))
         else:
-            cFrame[dataPoint.name] = (int(decAssembly[0:dataPoint.length]) * (float(10**dataPoint.decOffset)))
+            data = (int(decAssembly[0:dataPoint.length]) / (float(10**dataPoint.decOffset)))
         
+        cFrame[dataPoint.name] = int(data) if dataPoint.decOffset == 0 else data
+
         decAssembly = decAssembly[dataPoint.length:]
 
-    print cFrame
     return cFrame
 
 def encodeFrame(frame):
