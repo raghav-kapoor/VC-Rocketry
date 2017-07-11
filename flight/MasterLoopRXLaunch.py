@@ -24,7 +24,7 @@ while True:
                 while ((tempLine[-1] != "\x00" or tempLine[-2] != "\x00") and len(tempLine) < (FRAMESIZE + 2)):
                     tempLine+=ser.read(1)
                 if (tempLine[-1] == "\x00" and tempLine[-2] == "\x00" and len(tempLine) == (FRAMESIZE + 2)):
-                    decodedFrame = decodeFrame(binToDec(asciiToBin(tempLine[:-2])))
+                    decodedFrame = decodeFrame(tempLine[:-2])
                     #rxfile.write(str(decodedFrame))
                     #rxfile.write("\n")
                     frames.append(decodedFrame)
