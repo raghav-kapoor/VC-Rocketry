@@ -17,8 +17,8 @@ fCount = 0
 
 # Function displaying frames in an orderly fashion
 def write(line):
-	sys.stdout.write(line)
-	sys.stdout.flush()
+    sys.stdout.write(line)
+    sys.stdout.flush()
 
 while True:
     try:
@@ -52,29 +52,29 @@ mag_y: {mag_y} Gauss
 mag_z: {mag_z} Gauss
 angle: {angle}degrees
 """.format(
-            a_x = decodedFrame["a_x"],
-            a_y = decodedFrame["a_y"],
-            a_z = decodedFrame["a_z"],
-            temp = decodedFrame["temp"],
-            pressure = decodedFrame["pressure"],
-            current_1 = decodedFrame["current_1"],
-            volt_b1 = decodedFrame["volt_b1"],
-            current_2 = decodedFrame["current_2"],
-            volt_b2 = decodedFrame["volt_b2"],
-            gps_lon = decodedFrame["gps_lon"],
-            gps_lat = decodedFrame["gps_lat"],
-            gps_alt = decodedFrame["gps_alt"],
-            gps_spd = decodedFrame["gps_spd"],
-            mag_x = decodedFrame["mag_x"],
-            mag_y = decodedFrame["mag_y"],
-            mag_z = decodedFrame["mag_z"],
-            angle = 90-math.atan((decodedFrame["mag_y"])/(decodedFrame["mag_x"]))*180/(3.14)
+                    a_x = decodedFrame["a_x"],
+                    a_y = decodedFrame["a_y"],
+                    a_z = decodedFrame["a_z"],
+                    temp = decodedFrame["temp"],
+                    pressure = decodedFrame["pressure"],
+                    current_1 = decodedFrame["current_1"],
+                    volt_b1 = decodedFrame["volt_b1"],
+                    current_2 = decodedFrame["current_2"],
+                    volt_b2 = decodedFrame["volt_b2"],
+                    gps_lon = decodedFrame["gps_lon"],
+                    gps_lat = decodedFrame["gps_lat"],
+                    gps_alt = decodedFrame["gps_alt"],
+                    gps_spd = decodedFrame["gps_spd"],
+                    mag_x = decodedFrame["mag_x"],
+                    mag_y = decodedFrame["mag_y"],
+                    mag_z = decodedFrame["mag_z"],
+                    angle = 90-math.atan((decodedFrame["mag_y"])/(decodedFrame["mag_x"]))*180/(3.14)
         )
-            output = output.replace("\n","\n\033[K")
-            write(output)
-            lines = len(output.split("\n"))
-            write("\033[{}A".format(lines - 1))
-            fCount += 1
+                    output = output.replace("\n","\n\033[K")
+                    write(output)
+                    lines = len(output.split("\n"))
+                    write("\033[{}A".format(lines - 1))
+                    fCount += 1
         tempLine = ""
     except (KeyboardInterrupt):
         ser.close()
