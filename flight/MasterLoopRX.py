@@ -3,7 +3,7 @@ import serial
 import sys
 
 ser = serial.Serial("/dev/ttyUSB0", 9600)
-rxfile = open("testreceive.txt", "w")
+rxfile = open("RXlogfile" + str(time.time()) + ".txt", "w")
 FRAMESIZE= 39
 DECSIZE = 93
 
