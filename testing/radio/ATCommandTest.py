@@ -7,6 +7,7 @@ import serial
 ser = serial.Serial('/dev/ttyUSB0', 9600)
 ser.write("+++")
 time.sleep(1)
+ser.read(2)
 ser.write("ATID") #ask for ID
 reply = ""
 char = ser.read()
@@ -29,6 +30,7 @@ def readATParam(ser, name):
 
 #ser.write("+++")
 #time.sleep(1)
+#ser.read(2)
 #readATParam(ser, ID)
 #readATParam(ser, HC)
 #readATParam(ser, MY)
