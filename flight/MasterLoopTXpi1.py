@@ -194,11 +194,12 @@ def sendFrame():
 		ser.write("\x7F\x7F" + cFrameEncoded + "\x00\x00")
 	except:
 		print("\nRADIO MODULE ERROR\n")
-		txfile.write("\nRADIO MODULE ERROR\n")
-	txfile.write(str(currentFrame))
-	txfile.write("\n")
+		with open(filepath, 'a') as file:
+			file.write("\nRADIO MODULE ERROR\n")
+	with open(filepath, 'a') as file:
+		file.write(str(currentFrame))
 	print(str(currentFrame))
-	time.sleep(0.04)
+	time.sleep(0.05)
 
 def apogeeCheck():
         if len(frame) > 10:
@@ -432,8 +433,8 @@ def configWrite(parameter, val):
 #### ---------- Main Loop ---------- ####			
 ###NEW MAIN CONTROL FUNCTIONALITY
 
-#Open a file to write to
-txfile = open("/home/pi/VC-Rocketry/flight/" + str(time.time()) + ".txt", "w")
+#Name a file to write to
+filepath = "/home/pi/VC-Rocketry/flight/" + str(time.time()) + ".txt"
 
 #GPS STARTUP
 try:
@@ -441,8 +442,8 @@ try:
 	gpsp.start()
 except:
 	print("\nGPS NOT FUNCTIONAL\n")
-	txfile.write("\nERROR 3: GPS NOT FUNCTIONAL\n")
-	txfile.close()
+	with open(filepath, 'a') as file:
+		file.write("\nGPS NOT FUNCTIONAL\n")
 	sys.exit(3) #3 for GPS errors
 
 ###END GPS INITIALIZATION
@@ -452,8 +453,8 @@ try:
 	ser = serial.Serial('/dev/ttyUSB0', 9600)
 except:
 	print("\nRADIO MODULE NOT CONNECTED\n")
-	txfile.write("\nERROR 1: RADIO MODULE NOT CONNECTED\n")
-	txfile.close()
+	with open(filepath, 'a') as file:
+		file.write("\nRADIO MODULE NOT CONNECTED\n")
 	sys.exit(1) #1 means the radio module has a problem
 
 #Defines I2C address of current sensors
@@ -462,8 +463,8 @@ try:
 	ina219B = INA219(0x41)
 except:
 	print("\nCURRENT SENSORS NOT CONNECTED\n")
-	txfile.write("\nERROR 2: CURRENT SENSORS NOT CONNECTED\n")
-	txfile.close()
+	with open(filepath, 'a') as file:
+		file.write("\nCURRENT SENSORS NOT CONNECTED\n")
 	sys.exit(2) #2 means the current/power sensors have a problem
 	
 #GPIO INFO FOR PYROS
@@ -573,12 +574,12 @@ while True:
 			GPIO.output(20,1)
 			GPIO.cleanup()		
 			print("EMERGENCY DEPLOYMENT ACTIVATED")
-			txfile.write("EMERGENCY DEPLOYMENT ACTIVATED")
+			with open(filepath, 'a') as file:
+				file.write("\nRADIO MODULE NOT CONNECTED\n")
 			
 	except(KeyboardInterrupt):
 		gpsp.running = False
 		gpsp.join()
-		txfile.close()
 		ser.close()
 
 	#### ---------- End of Main Loop ---------- ####
